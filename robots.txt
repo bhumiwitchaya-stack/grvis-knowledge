@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://bhumiwitchaya-stack.github.io/grvis-knowledge/sitemap.xml

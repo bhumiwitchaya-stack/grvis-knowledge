@@ -1,0 +1,8 @@
+{
+  "target_url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/",
+  "branch": "main",
+  "folder": "/(root)",
+  "entry_file": "index.html",
+  "nojekyll": true,
+  "robots_sitemap": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/sitemap.xml"
+}

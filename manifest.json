@@ -1,0 +1,22 @@
+{
+  "files": [
+    "README.md",
+    "core/index.html",
+    "history/index.html",
+    "index.html",
+    "knowledge-index.json",
+    "kpi/index.html",
+    "llms.txt",
+    "machine/index.html",
+    "problem-solving/index.html",
+    "projects/index.html",
+    "quality/index.html",
+    "reliability/index.html",
+    "robots.txt",
+    "sitemap.xml",
+    "standards/index.html",
+    "styles.css"
+  ],
+  "source_pack": "GRVIS_Copilot365_Knowledge_Domains_v1",
+  "security_note": "Public content only. Do not deploy confidential/internal knowledge."
+}

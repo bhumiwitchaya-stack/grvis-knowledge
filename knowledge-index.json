@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "core",
+    "title": "GRVIS Core Reference",
+    "source": "00_GRVIS_Core_Reference.md",
+    "path": "/core/"
+  },
+  {
+    "slug": "problem-solving",
+    "title": "Engineering Problem Solving",
+    "source": "01_Engineering_Problem_Solving.md",
+    "path": "/problem-solving/"
+  },
+  {
+    "slug": "reliability",
+    "title": "Maintenance, Reliability & OEE",
+    "source": "02_Maintenance_Reliability_OEE.md",
+    "path": "/reliability/"
+  },
+  {
+    "slug": "machine",
+    "title": "Process & Machine Knowledge",
+    "source": "03_Process_Machine_Knowledge.md",
+    "path": "/machine/"
+  },
+  {
+    "slug": "quality",
+    "title": "Quality, Food Safety & Process Control",
+    "source": "04_Quality_Food_Safety_Process_Control.md",
+    "path": "/quality/"
+  },
+  {
+    "slug": "projects",
+    "title": "Projects & Change Management",
+    "source": "05_Projects_Change_Management_Decisions.md",
+    "path": "/projects/"
+  },
+  {
+    "slug": "standards",
+    "title": "SOP, Standards & Compliance",
+    "source": "06_SOP_Standards_Compliance.md",
+    "path": "/standards/"
+  },
+  {
+    "slug": "history",
+    "title": "Operational History & Lessons Learned",
+    "source": "07_Operational_History_Lessons_Learned.md",
+    "path": "/history/"
+  },
+  {
+    "slug": "kpi",
+    "title": "Data, KPI & Dashboard Definitions",
+    "source": "08_Data_KPI_Dashboard_Definitions.md",
+    "path": "/kpi/"
+  }
+]
