@@ -12,7 +12,7 @@ A small, read-only prototype for extracting text from **public web pages**. It u
 - Emits extracted page text as **untrusted data** in JSON. It is not an instruction to the agent.
 - Does not write fetched content to disk or start an MCP/HTTP server.
 
-The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine.
+The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The text-output limit is applied after the response is fetched, so it does not cap download memory; use OS/container resource limits for untrusted sites.
 
 ## Install
 
@@ -48,3 +48,4 @@ Scrapling is a third-party dependency under BSD-3-Clause. This wrapper is indepe
 ```sh
 python -m unittest discover -s tests -v
 ```
+
