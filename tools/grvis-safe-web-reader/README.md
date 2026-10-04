@@ -1,6 +1,6 @@
 # GRVIS Safe Web Reader
 
-A small, read-only prototype for extracting text from **public web pages**. It uses Scrapling's regular HTTP fetcher, not browser automation or stealth mode.
+A small, read-only prototype for extracting text from **public web pages**. Python's standard-library HTTP client performs the request; Scrapling parses the returned HTML. It does not use browser automation or stealth mode.
 
 ## Safety defaults
 
@@ -8,11 +8,11 @@ A small, read-only prototype for extracting text from **public web pages**. It u
 - Accepts only `http`/`https` on ports 80/443, rejects URL credentials and IP-literal hosts.
 - Resolves the host and rejects private, loopback, link-local, reserved, and non-global addresses.
 - Does not follow redirects, send cookies, use proxies, log in, or make non-GET requests.
-- Uses TLS certificate verification, a short timeout, and zero retries.
+- Uses TLS certificate verification, a 10-second timeout, zero retries, and a 2 MiB response-body limit enforced while reading.
 - Emits extracted page text as **untrusted data** in JSON. It is not an instruction to the agent.
 - Does not write fetched content to disk or start an MCP/HTTP server.
 
-The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The text-output limit is applied after the response is fetched, so it does not cap download memory; use OS/container resource limits for untrusted sites.
+The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The 2 MiB body cap bounds response buffering; the extracted text is separately limited to 50,000 characters.
 
 ## Install
 
@@ -25,7 +25,7 @@ python -m pip install --upgrade pip
 python -m pip install -e .
 ```
 
-The application uses Scrapling's HTTP fetcher only. It does not install browser binaries or enable the optional AI/MCP, stealth, or proxy features.
+The application uses Scrapling's HTML parser only. It does not install browser binaries or optional AI/MCP, stealth, proxy, or browser-fetcher dependencies.
 
 ## Example
 
@@ -48,4 +48,3 @@ Scrapling is a third-party dependency under BSD-3-Clause. This wrapper is indepe
 ```sh
 python -m unittest discover -s tests -v
 ```
-
