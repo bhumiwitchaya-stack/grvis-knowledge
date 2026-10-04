@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grvis-safe-web-reader"
+version = "0.1.0"
+description = "Read-only, allowlisted public web text extraction with conservative defaults"
+requires-python = ">=3.10"
+dependencies = ["scrapling==0.4.15"]
+license = { text = "MIT" }
+readme = "README.md"
+
+[project.scripts]
+grvis-safe-web-reader = "grvis_safe_web_reader.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
