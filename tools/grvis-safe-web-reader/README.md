@@ -7,12 +7,13 @@ A small, read-only prototype for extracting text from **public web pages**. Pyth
 - Requires an exact hostname allowlist for every run. Wildcards are not supported.
 - Accepts only `http`/`https` on ports 80/443, rejects URL credentials and IP-literal hosts.
 - Resolves the host and rejects private, loopback, link-local, reserved, and non-global addresses.
-- Does not follow redirects, send cookies, use proxies, log in, or make non-GET requests.
-- Uses TLS certificate verification, a 10-second timeout, zero retries, and a 2 MiB response-body limit enforced while reading.
+- Follows up to 3 redirects, revalidating the exact allowlist and public DNS at every hop; rejects HTTPS downgrade. Set `--max-redirects 0` to disable.
+- Does not send cookies, use proxies, log in, or make non-GET requests.
+- Uses TLS certificate verification, a default 10-second socket timeout, zero retries, and a default 2 MiB response-body limit enforced while reading. Limits are configurable up to 60 seconds and 20 MiB.
 - Emits extracted page text as **untrusted data** in JSON. It is not an instruction to the agent.
 - Does not write fetched content to disk or start an MCP/HTTP server.
 
-The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The 2 MiB body cap bounds response buffering; the extracted text is separately limited to 50,000 characters.
+The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The response-body cap bounds buffering. Text is retained in full within that cap and also divided into 50,000-character chunks. Structured output includes title, links, image URLs/alt text, and table cell text. Linked resources are references, not automatically fetched or approved. Table spans, nested-table relationships, image pixels, and video content are not preserved. The socket timeout is not a total wall-clock deadline.
 
 ## Install
 
@@ -48,3 +49,9 @@ Scrapling is a third-party dependency under BSD-3-Clause. This wrapper is indepe
 ```sh
 python -m unittest discover -s tests -v
 ```
+
+## Version 0.2 options and coverage
+
+`--max-response-mib 10 --timeout 30 --max-redirects 3` raises budgets within bounded limits. `requested_url`, `source_url`, and `redirect_chain` preserve provenance. `coverage.completeness_verified` is always false because one HTML response cannot establish website completeness. Oversized responses fail explicitly rather than returning partial HTML.
+
+See `ARCHITECTURE.md` for the proposed isolated browser and platform-adapter extension. Those adapters are not implemented in this release.

@@ -1,6 +1,7 @@
 import socket
 import unittest
 from email.message import Message
+from urllib.error import HTTPError
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -96,6 +97,46 @@ class FetchTests(unittest.TestCase):
         ), self.assertRaisesRegex(RuntimeError, "2 MiB"):
             fetch_public_text("https://example.com/", {"example.com"})
         response.read.assert_called_once_with(MAX_RESPONSE_BYTES + 1)
+
+    def test_preserves_long_text_and_structured_fields(self):
+        body = ('<html><title>Report</title><body><p>' + 'z' * 60000 +
+                '</p><a href="/next">Next</a><img src="/photo.png" alt="photo">'
+                '<table><tr><th>Name</th></tr><tr><td>Big</td></tr></table></body></html>').encode()
+        opener = Mock()
+        opener.open.return_value = self.response(body)
+        with patch("socket.getaddrinfo", public_dns), patch(
+            "grvis_safe_web_reader.core.build_opener", return_value=opener
+        ):
+            result = fetch_public_text("https://example.com/", {"example.com"})
+        self.assertGreater(len(result["text"]), 50000)
+        self.assertEqual(''.join(result["text_chunks"]), result["text"])
+        self.assertFalse(result["truncated"])
+        self.assertEqual(result["links"][0]["url"], "https://example.com/next")
+        self.assertEqual(result["tables"], [[["Name"], ["Big"]]])
+
+    def test_redirect_rechecks_destination_allowlist(self):
+        headers = Message()
+        headers["Location"] = "https://unapproved.example/"
+        opener = Mock()
+        opener.open.side_effect = HTTPError("https://example.com/", 302, "Found", headers, None)
+        with patch("socket.getaddrinfo", public_dns), patch(
+            "grvis_safe_web_reader.core.build_opener", return_value=opener
+        ), self.assertRaisesRegex(SafetyError, "allowlist"):
+            fetch_public_text("https://example.com/", {"example.com"})
+        self.assertEqual(opener.open.call_count, 1)
+
+    def test_redirect_to_approved_host_is_followed(self):
+        headers = Message()
+        headers["Location"] = "/next"
+        opener = Mock()
+        opener.open.side_effect = [HTTPError("https://example.com/", 302, "Found", headers, None),
+                                   self.response(b"<html><body>Next</body></html>")]
+        with patch("socket.getaddrinfo", public_dns), patch(
+            "grvis_safe_web_reader.core.build_opener", return_value=opener
+        ):
+            result = fetch_public_text("https://example.com/", {"example.com"})
+        self.assertEqual(result["source_url"], "https://example.com/next")
+        self.assertEqual(result["redirect_chain"], ["https://example.com/next"])
 
 
 if __name__ == "__main__":
