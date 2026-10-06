@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grvis-safe-web-reader"
-version = "0.3.0"
+version = "0.4.0"
 description = "Bounded public HTML/PDF reader, coordinator and local stdio MCP"
 requires-python = ">=3.10"
 dependencies = []

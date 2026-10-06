@@ -33,3 +33,9 @@ Primary protocol references:
 ## Origin
 
 Reimplementation of the reviewed GRVIS public reader's behavior, with safer connection handling, extraction classification and coordination. Review baseline: `bhumiwitchaya-stack/grvis-knowledge`, branch `feat/grvis-safe-web-reader-v0.1`, commit `039a565427f1083c8280b0239e113d9dec1780a3`, reader version 0.2.0. Bundled runtime version 0.3.0 is independent of the upstream branch; installation does not update that repository. See `research-policy.md` for orchestration rules.
+
+## Network routes in v0.4.0
+
+Direct mode remains the default checked-public-IP/TLS path. Explicit managed-proxy mode uses only the approved runtime loopback proxy; both a fixed reviewed public-source registry and the task allowlist must approve every destination. It delegates DNS and final destination policy to the platform and reports no local public-IP validation or pinning. The local stdio MCP route is fixed by server startup, never tool arguments.
+
+The separately deployed owner-private Cloud service uses provider resolver networking for built-in source hosts, with the same explicit trust disclosure; custom hosts require mandatory DoH preflight. See CLOUD.md for capabilities, limits and deployment verification.
