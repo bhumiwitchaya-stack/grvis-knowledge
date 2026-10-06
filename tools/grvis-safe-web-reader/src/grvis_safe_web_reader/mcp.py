@@ -22,7 +22,7 @@ class ProtocolError(Exception):
  def __init__(self,code,message): super().__init__(message); self.code=code
 
 class Server:
- def __init__(self,domains): self.domains=domains; self.initialized=False; self.ready=False
+ def __init__(self,domains,network_route='direct'): self.domains=domains; self.network_route=network_route; self.initialized=False; self.ready=False
  def tool(self,name,args):
   if not isinstance(args,dict): raise ProtocolError(-32602,'Arguments must be an object')
   schema=next((t['inputSchema'] for t in TOOLS if t['name']==name),None)
@@ -36,7 +36,7 @@ class Server:
    urls=[args['url']] if name=='grvis_fetch' else args['urls']
    if not isinstance(urls,list) or not 1<=len(urls)<=12 or not all(isinstance(u,str) and len(u)<=8192 for u in urls):
     raise ProtocolError(-32602,'Invalid URL list')
-   def job(url): return {'url':url,'domains':self.domains,'deadline':args.get('deadline',20),
+   def job(url): return {'url':url,'domains':self.domains,'network_route':self.network_route,'deadline':args.get('deadline',20),
      'max_bytes':args.get('max_response_mib',2)*1024*1024,'redirects':args.get('max_redirects',3),'pdf_pages':args.get('pdf_pages',30)}
    total=args.get('batch_deadline',120)
    if type(total) is not int or not 1<=total<=300: raise ProtocolError(-32602,'Invalid batch deadline')
@@ -69,11 +69,12 @@ class Server:
 
 def main():
  parser=argparse.ArgumentParser(description=__doc__); parser.add_argument('--allow-domain',action='append',required=True)
+ parser.add_argument('--network-route',choices=['direct','managed-proxy'],default='direct')
  args=parser.parse_args()
  try: domains=[hostname(d) for d in args.allow_domain]
  except ReaderError: parser.error('Require exact DNS hostnames')
  if len(domains)>50: parser.error('At most 50 allowed hosts')
- server=Server(domains)
+ server=Server(domains,args.network_route)
  while True:
   line=sys.stdin.buffer.readline(65537)
   if not line: break

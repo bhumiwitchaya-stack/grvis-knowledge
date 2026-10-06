@@ -36,3 +36,16 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
 Tests use offline fixtures, actual deadline/MCP subprocesses and optional PDF fixtures. They do not certify public networking; current Work live attempts return DNS unavailable. An independent skill task exercised authorized GitHub connector fallback. No fake DNS or wider permissions were used for live checks. See RESEARCH_POLICY.md and ARCHITECTURE.md.
+
+## Managed runtime networking (v0.4.0)
+
+When OS DNS is unavailable in an approved managed runtime, explicitly use:
+
+```sh
+grvis-safe-web-reader fetch https://example.com/ --allow-domain example.com --network-route managed-proxy
+grvis-research-mcp --allow-domain example.com --network-route managed-proxy
+```
+
+This uses only the platform loopback HTTPS proxy and a fixed reviewed public host registry plus the per-task exact allowlist. It reports delegated DNS and no IP pinning. It cannot authorize unknown hosts, source credentials, HTTP or unchecked redirects. Direct checked-IP mode remains the default. This resolves reader availability without claiming the platform OS resolver has been changed. See SECURITY.md.
+
+The separately deployed owner-private GRVIS Research Cloud offers HTML/PDF, bounded batch and remote MCP. Connection requires installation/OAuth in the host; publication alone is not automatic activation. See CLOUD.md.

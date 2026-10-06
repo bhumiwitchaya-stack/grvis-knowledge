@@ -27,13 +27,46 @@ class Tests(unittest.TestCase):
    conn=Mock(); conn.getresponse.return_value=resp; connections.append(conn)
   with patch.object(r,'public_addresses',return_value=dns('',443)),patch.object(r,'PinnedHTTPS',side_effect=connections):
    return r.fetch_worker(job or dict(BASE)),connections
+ def test_managed_proxy_requires_loopback_without_credentials(self):
+  import os
+  for value in ['http://remote.example:1234','http://u:p@127.0.0.1:1234','https://127.0.0.1:1234','http://127.0.0.1:1234/path']:
+   with patch.dict(os.environ,{'HTTPS_PROXY':value}),self.assertRaises(r.ReaderError): r.managed_proxy_url()
+  with patch.dict(os.environ,{'HTTPS_PROXY':'http://127.0.0.1:1234'}): self.assertEqual(r.managed_proxy_url(),'http://127.0.0.1:1234')
+ def test_gateway_transport_failure_is_explicit_unavailable(self):
+  opener=Mock();opener.open.side_effect=r.URLError('transport failed')
+  with patch.object(r,'managed_opener',return_value=opener),self.assertRaises(r.ReaderError) as ctx:
+   conn=r.ManagedProxyConnection('example.com',443,[],2);conn.request('GET','/',{})
+  self.assertEqual(ctx.exception.code,'gateway_unavailable');self.assertEqual(ctx.exception.status,'unavailable')
+ def test_managed_route_requires_curated_and_task_host(self):
+  job={**BASE,'url':'https://custom.example/','domains':['custom.example'],'network_route':'managed-proxy'}
+  with patch.object(r,'managed_proxy_url',return_value='http://127.0.0.1:1234'),self.assertRaises(r.ReaderError) as ctx: r.fetch_worker(job)
+  self.assertEqual(ctx.exception.code,'gateway_domain_not_allowed')
+  with self.assertRaises(r.ReaderError): r.fetch_worker({**BASE,'network_route':'managed-proxy','domains':['github.com']})
+ def test_managed_route_delegates_dns_and_reports_trust_boundary(self):
+  conn=Mock();conn.getresponse.return_value=Response()
+  with patch.object(r,'managed_proxy_url',return_value='http://127.0.0.1:1234'),patch.object(r,'ManagedProxyConnection',return_value=conn),patch.object(socket,'getaddrinfo',side_effect=AssertionError('Local DNS is unavailable')):
+   result=r.fetch_worker({**BASE,'network_route':'managed-proxy'})
+  self.assertEqual(result['network']['dns_method'],'managed_gateway');self.assertFalse(result['network']['dns_public_checked']);self.assertFalse(result['network']['ip_pinning'])
+ def test_managed_route_redirect_does_not_widen_registry(self):
+  conn=Mock();conn.getresponse.return_value=Response(status=302,headers={'Location':'https://custom.example/'})
+  job={**BASE,'network_route':'managed-proxy','domains':['example.com','custom.example']}
+  with patch.object(r,'managed_proxy_url',return_value='http://127.0.0.1:1234'),patch.object(r,'ManagedProxyConnection',return_value=conn) as connections,self.assertRaises(r.ReaderError) as ctx: r.fetch_worker(job)
+  self.assertEqual(ctx.exception.code,'gateway_domain_not_allowed');self.assertEqual(connections.call_count,1)
+ def test_managed_route_http_rejected(self):
+  with self.assertRaises(r.ReaderError): r.fetch_worker({**BASE,'url':'http://example.com/','allow_http':True,'network_route':'managed-proxy'})
+ def test_mcp_route_set_by_server_not_tool_argument(self):
+  server=m.Server(['example.com'],'managed-proxy')
+  with self.assertRaises(m.ProtocolError): server.tool('grvis_fetch',{'url':BASE['url'],'network_route':'direct'})
+  with patch.object(m,'run_job',return_value={'status':'ok'}) as run:
+   server.tool('grvis_fetch',{'url':BASE['url']})
+  self.assertEqual(run.call_args.args[0]['network_route'],'managed-proxy')
  def test_idna_and_unicode_path(self):
   url,host,_=r.validate_url('HTTPS://BÜCHER.example./ไทย#fragment',['xn--bcher-kva.example'])
   self.assertEqual(host,'xn--bcher-kva.example'); self.assertIn('%E0',url); self.assertNotIn('#',url)
  def test_reject_unsafe_url(self):
   urls=['file:///etc/passwd','http://example.com/','https://u:p@example.com/','https://127.0.0.1/',
         'https://example.com.attacker.test/','https://example.com:8443/','https://example.com/a\nb','https://example.com/%0d%0aX',
-        'https://example.com/\\x','https://[::1]/']
+        'https://example.com/\\x','https://[::1]/','https://example.com/?access_token=secret']
   for url in urls:
    with self.subTest(url=url),self.assertRaises(r.ReaderError): r.validate_url(url,['example.com'])
  def test_private_and_mixed_dns(self):

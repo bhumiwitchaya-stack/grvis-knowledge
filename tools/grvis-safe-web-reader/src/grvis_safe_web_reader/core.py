@@ -9,6 +9,7 @@ import importlib.util
 import io
 import ipaddress
 import json
+import os
 import re
 import socket
 import ssl
@@ -18,9 +19,11 @@ import time
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import quote, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urljoin, urlsplit, urlunsplit
+from urllib.error import HTTPError, URLError
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 class ReaderError(Exception):
     def __init__(self, code, message, status='error'):
         super().__init__(message)
@@ -46,6 +49,8 @@ def validate_url(url, domains, allow_http=False):
             raise ReaderError('unsafe_url', 'HTTPS required unless HTTP explicitly enabled')
         if p.username is not None or p.password is not None or not p.hostname:
             raise ReaderError('unsafe_url', 'Missing host or URL credentials')
+        if any(re.fullmatch(r'password|access_token|api_key|apikey|signature|x-amz-signature',key,re.I) for key,_ in parse_qsl(p.query)):
+            raise ReaderError('credential_url','Credential-bearing source URLs are not supported','blocked')
         host = hostname(p.hostname)
         if host not in {hostname(d) for d in domains}:
             raise ReaderError('domain_not_allowed', 'Destination not on exact allowlist', 'blocked')
@@ -98,6 +103,56 @@ class PinnedHTTP(http.client.HTTPConnection):
     def __init__(self, host, port, answers, timeout):
         super().__init__(host, port, timeout=timeout); self.answers = answers
     def connect(self): self.sock = connect_pinned(self.answers, self.timeout)
+
+
+def managed_proxy_url():
+    value=os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
+    if not value: raise ReaderError('proxy_unavailable','Managed HTTPS proxy unavailable','unavailable')
+    try:
+        p=urlsplit(value)
+        if p.scheme!='http' or p.hostname!='127.0.0.1' or not p.port or p.username or p.password or p.path not in ('','/') or p.query or p.fragment:
+            raise ValueError('unapproved proxy')
+    except ValueError as exc: raise ReaderError('proxy_unavailable','Only the runtime loopback proxy is supported','unavailable') from exc
+    return value
+
+class NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self,*args,**kwargs): return None
+
+def managed_opener():
+    return build_opener(ProxyHandler({'https':managed_proxy_url()}),HTTPSHandler(context=ssl.create_default_context()),NoRedirect())
+
+# This curated registry is a different trust boundary from checked-IP direct mode.
+# The caller's per-task allowlist must still approve each hostname.
+MANAGED_GATEWAY_HOSTS = frozenset({'example.com','github.com','raw.githubusercontent.com','docs.python.org',
+    'modelcontextprotocol.io','developers.google.com','developers.cloudflare.com'})
+
+def managed_destination(host,port):
+    managed_proxy_url()
+    if port!=443 or host not in MANAGED_GATEWAY_HOSTS:
+        raise ReaderError('gateway_domain_not_allowed','Managed gateway supports reviewed public source hosts only','blocked')
+    # Runtime DNS is delegated to its trusted gateway; never claim a local IP check.
+    return []
+
+class ManagedProxyConnection:
+    """Explicit trusted runtime gateway route; DNS delegated, connection IP not pinned."""
+    def __init__(self,host,port,answers,timeout):
+        self.host,self.timeout,self.response=host,timeout,None
+        self.opener=managed_opener()
+    def request(self,method,target,headers):
+        if method!='GET': raise ReaderError('unsafe_method','GET only','blocked')
+        try: self.response=self.opener.open(Request('https://'+self.host+target,headers=headers,method='GET'),timeout=self.timeout)
+        except HTTPError as exc: self.response=exc
+        except (URLError,TimeoutError,OSError) as exc:
+            raise ReaderError('gateway_unavailable','Managed runtime gateway could not reach this public source','unavailable') from exc
+    def getresponse(self):
+        response=self.response
+        class Adapter:
+            status=getattr(response,'status',getattr(response,'code',None))
+            def getheader(self,key,default=None): return response.headers.get(key,default)
+            def read(self,count): return response.read(count)
+        return Adapter()
+    def close(self):
+        if self.response: self.response.close()
 
 class Node:
     def __init__(self, tag, attrs=None):
@@ -214,9 +269,14 @@ def fetch_worker(job):
     end = time.monotonic()+job['deadline']; current = job['url']; chain = []
     for hop in range(job['redirects']+1):
         current,host,port = validate_url(current,job['domains'],job.get('allow_http',False))
-        answers = public_addresses(host,port); timeout = min(10,end-time.monotonic())
+        timeout = min(10,end-time.monotonic())
+        route=job.get('network_route','direct')
+        if route=='managed-proxy' and not current.startswith('https:'): raise ReaderError('unsafe_url','Managed proxy route requires HTTPS','blocked')
+        answers = managed_destination(host,port) if route=='managed-proxy' else public_addresses(host,port)
+        timeout = min(10,end-time.monotonic())
         if timeout<=0: raise ReaderError('deadline','Total deadline exceeded','unavailable')
-        conn = (PinnedHTTPS if current.startswith('https:') else PinnedHTTP)(host,port,answers,timeout)
+        cls=ManagedProxyConnection if route=='managed-proxy' else PinnedHTTPS if current.startswith('https:') else PinnedHTTP
+        conn=cls(host,port,answers,timeout)
         try:
             p=urlsplit(current)
             conn.request('GET',p.path+('?' + p.query if p.query else ''),headers={'User-Agent':'GRVIS-Research/'+VERSION,
@@ -248,7 +308,8 @@ def fetch_worker(job):
         result=extract_pdf(raw,job['pdf_pages']) if media_type=='application/pdf' else extract_html(raw,content_type,current)
         result.update({'schema_version':'1.0','reader_version':VERSION,'requested_url':job['url'],'source_url':current,'redirect_chain':chain,
                        'http_status':status,'content_type':media_type,'response_bytes':len(raw),'retrieved_at':datetime.now(timezone.utc).isoformat(),
-                       'content_sha256':hashlib.sha256(raw).hexdigest(),'content_is_untrusted_data':True,'transport_authenticated':current.startswith('https:')})
+                       'content_sha256':hashlib.sha256(raw).hexdigest(),'content_is_untrusted_data':True,'transport_authenticated':current.startswith('https:'),
+                       'network':{'route':route,'dns_public_checked':route=='direct','ip_pinning':route=='direct','dns_method':'system' if route=='direct' else 'managed_gateway','gateway_trusted':route=='managed-proxy','destination_policy':'task_and_curated_exact_allowlist' if route=='managed-proxy' else 'task_exact_allowlist_and_public_ip'}})
         return result
     raise ReaderError('redirect_limit','Redirect budget exhausted','partial')
 
@@ -274,6 +335,7 @@ def bounded_output(result):
     return result
 
 def validate_job(job):
+    if job.get('network_route','direct') not in {'direct','managed-proxy'}: raise ReaderError('invalid_route','Unsupported network route')
     for key,(low,high) in {'max_bytes':(1,20*1024*1024),'deadline':(1,60),'redirects':(0,5),'pdf_pages':(1,100)}.items():
         value=job.get(key)
         if isinstance(value,bool) or not isinstance(value,int) or not low<=value<=high: raise ReaderError('invalid_budget','Invalid '+key+' budget')
@@ -312,8 +374,10 @@ def batch_jobs(jobs,total_deadline=120):
             'coverage':{'requested_sources':len(jobs),'results_recorded':len(results),'completeness_verified':False},'elapsed_seconds':round(time.monotonic()-started,3)}
 
 def capabilities():
+    try: managed_proxy_url(); proxy=True
+    except ReaderError: proxy=False
     return {'reader_version':VERSION,'python':sys.version.split()[0],'html':True,'pdf':bool(importlib.util.find_spec('pypdf')),
-            'network_verified':False,'dns_ip_pinning':True,'per_job_process_deadline':True,'javascript':False,'ocr':False,
+            'network_verified':False,'managed_proxy_available':proxy,'managed_proxy_domains':sorted(MANAGED_GATEWAY_HOSTS),'dns_ip_pinning':{'direct':True,'managed-proxy':False},'per_job_process_deadline':True,'javascript':False,'ocr':False,
             'social_api':False,'media':False,'local_stdio_mcp':True,'remote_mcp_deployed':False,'scheduler':False}
 
 def main():
@@ -333,6 +397,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode',choices=['fetch','batch','capabilities']); parser.add_argument('url',nargs='?')
     parser.add_argument('--url',action='append',dest='urls',default=[]); parser.add_argument('--allow-domain',action='append',default=[])
+    parser.add_argument('--network-route',choices=['direct','managed-proxy'],default='direct')
     parser.add_argument('--allow-http',action='store_true'); parser.add_argument('--deadline',type=int,default=20)
     parser.add_argument('--batch-deadline',type=int,default=120); parser.add_argument('--max-response-mib',type=int,default=2)
     parser.add_argument('--max-redirects',type=int,default=3); parser.add_argument('--pdf-pages',type=int,default=30)
@@ -341,7 +406,7 @@ def main():
     if args.mode=='capabilities': print(json.dumps(capabilities())); return 0
     urls=([args.url] if args.url else [])+args.urls
     if not urls or (args.mode=='fetch' and len(urls)!=1): parser.error('fetch needs one URL; batch needs 1–12')
-    jobs=[{'url':url,'domains':args.allow_domain,'allow_http':args.allow_http,'deadline':args.deadline,'max_bytes':args.max_response_mib*1024*1024,
+    jobs=[{'url':url,'domains':args.allow_domain,'network_route':args.network_route,'allow_http':args.allow_http,'deadline':args.deadline,'max_bytes':args.max_response_mib*1024*1024,
            'redirects':args.max_redirects,'pdf_pages':args.pdf_pages,'chunks':args.chunks,'include_all_text':args.include_all_text} for url in urls]
     try: result=run_job(jobs[0]) if args.mode=='fetch' else batch_jobs(jobs,args.batch_deadline)
     except ReaderError as exc: result=failure({},exc.code,str(exc),exc.status)
