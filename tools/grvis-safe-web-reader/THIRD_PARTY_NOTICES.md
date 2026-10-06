@@ -1,5 +1,3 @@
 # Third-party notices
 
-This project depends on Scrapling (`scrapling==0.4.15`), distributed under the BSD 3-Clause License. Scrapling source code is not copied into this project. The upstream license is available at <https://github.com/D4Vinci/Scrapling/blob/main/LICENSE>.
-
-Additional transitive dependencies are installed by Python packaging. Review their licenses and security advisories when producing a distributable build.
+Version 0.3 uses standard-library HTML parsing/networking; Scrapling is no longer required. Optional pypdf 6.10.0 uses BSD-3-Clause; its license accompanies the package. No third-party source is bundled. Review optional dependency licenses/advisories before production builds.

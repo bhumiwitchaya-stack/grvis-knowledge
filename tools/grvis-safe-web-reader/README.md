@@ -1,57 +1,38 @@
-# GRVIS Safe Web Reader
+# GRVIS Safe Web Reader 0.3.0
 
-A small, read-only prototype for extracting text from **public web pages**. Python's standard-library HTTP client performs the request; Scrapling parses the returned HTML. It does not use browser automation or stealth mode.
+Bounded public HTML/PDF extraction, provenance, status, multi-source coordination and optional local stdio MCP. HTML uses the standard library; optional PDF support uses pinned pypdf. No JavaScript, login, CAPTCHA bypass, media downloads or remote deployment.
 
-## Safety defaults
+## Install and run
 
-- Requires an exact hostname allowlist for every run. Wildcards are not supported.
-- Accepts only `http`/`https` on ports 80/443, rejects URL credentials and IP-literal hosts.
-- Resolves the host and rejects private, loopback, link-local, reserved, and non-global addresses.
-- Follows up to 3 redirects, revalidating the exact allowlist and public DNS at every hop; rejects HTTPS downgrade. Set `--max-redirects 0` to disable.
-- Does not send cookies, use proxies, log in, or make non-GET requests.
-- Uses TLS certificate verification, a default 10-second socket timeout, zero retries, and a default 2 MiB response-body limit enforced while reading. Limits are configurable up to 60 seconds and 20 MiB.
-- Emits extracted page text as **untrusted data** in JSON. It is not an instruction to the agent.
-- Does not write fetched content to disk or start an MCP/HTTP server.
-
-The DNS check is defense in depth, not a complete SSRF boundary: DNS can change between validation and connection. Run with outbound network controls that block private/link-local destinations when using this on a sensitive machine. The response-body cap bounds buffering. Text is retained in full within that cap and also divided into 50,000-character chunks. Structured output includes title, links, image URLs/alt text, and table cell text. Linked resources are references, not automatically fetched or approved. Table spans, nested-table relationships, image pixels, and video content are not preserved. The socket timeout is not a total wall-clock deadline.
-
-## Install
-
-Python 3.10+ is required. Create a virtual environment, then install the pinned dependency and this project:
+In a virtual environment:
 
 ```sh
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-python -m pip install --upgrade pip
 python -m pip install -e .
+# Optional PDF:
+python -m pip install -e '.[pdf]'
+grvis-safe-web-reader capabilities
+grvis-safe-web-reader fetch https://example.com/article --allow-domain example.com
+grvis-safe-web-reader batch --allow-domain example.com --url https://example.com/a --url https://example.com/b
 ```
 
-The application uses Scrapling's HTML parser only. It does not install browser binaries or optional AI/MCP, stealth, proxy, or browser-fetcher dependencies.
+Legacy single-URL CLI invocation still selects fetch. HTTPS is now the default; public HTTP requires explicit `--allow-http`. `--timeout` is replaced by `--deadline`, a total process deadline including DNS/parsing. Python API/result schema changed: use `run_job`/`batch_jobs` and inspect `status`/`reason`. No output certifies source truth or full coverage.
 
-## Example
+Exact hosts, checked public DNS addresses, direct checked-IP sockets and TLS hostname/certificate verification apply to every redirect. No proxy environment, cookies or credentials are reused. Defaults: 2 MiB body/decompressed bytes, 3 redirects, 20 seconds/job, 30 PDF pages, 12 sources/batch and 120 seconds/batch. Output JSON capped at 4 MiB; oversized output returns explicit partial coverage. Child workers bound runtime and Unix resource usage; they are not security sandboxes. Sensitive services still require reviewed external egress controls.
+
+HTML honors base URLs, removes scripts/explicitly hidden subtrees consistently from structured fields and prefers article/main content. Challenge detection is heuristic. CSS visibility, OCR, dynamic/social APIs, exact table layout and media are unsupported. PDF pages index text offsets; blank pages and page budgets are recorded. Encrypted PDFs are unsupported. Every source-derived field is untrusted.
+
+## Local MCP
 
 ```sh
-grvis-safe-web-reader \
-  --allow-domain example.com \
-  https://example.com/article
+grvis-research-mcp --allow-domain example.com
 ```
 
-The allowlist is exact: `example.com` does not allow `sub.example.com`. Add each approved hostname explicitly. Output is one JSON object on stdout; the process exits non-zero on validation or fetch failure.
+Minimal stdio JSON-RPC with initialization, ping, tools/list and tools/call for capabilities/fetch/batch. Only startup configuration approves hosts. Calls execute sequentially with deadlines; cancellation notifications do not interrupt active calls. No HTTP listener, remote endpoint or host registration is created.
 
-## Scope and limits
-
-This prototype does not search social platforms, access login-only content, schedule monitoring, or guarantee that a website permits automated access. Check the site's terms and applicable law. Do not use it with company or customer data without approval from the relevant IT/security owner.
-
-Scrapling is a third-party dependency under BSD-3-Clause. This wrapper is independently authored and does not include Scrapling source code. See `THIRD_PARTY_NOTICES.md`.
-
-## Tests
+## Check
 
 ```sh
-python -m unittest discover -s tests -v
+PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
-## Version 0.2 options and coverage
-
-`--max-response-mib 10 --timeout 30 --max-redirects 3` raises budgets within bounded limits. `requested_url`, `source_url`, and `redirect_chain` preserve provenance. `coverage.completeness_verified` is always false because one HTML response cannot establish website completeness. Oversized responses fail explicitly rather than returning partial HTML.
-
-See `ARCHITECTURE.md` for the proposed isolated browser and platform-adapter extension. Those adapters are not implemented in this release.
+Tests use offline fixtures, actual deadline/MCP subprocesses and optional PDF fixtures. They do not certify public networking; current Work live attempts return DNS unavailable. An independent skill task exercised authorized GitHub connector fallback. No fake DNS or wider permissions were used for live checks. See RESEARCH_POLICY.md and ARCHITECTURE.md.
