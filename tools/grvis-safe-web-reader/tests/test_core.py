@@ -1,143 +1,178 @@
+"""Offline regression tests; fixtures do not certify live network access."""
+import gzip
+import io
+import json
 import socket
+import subprocess
+import sys
+import tempfile
+import time
 import unittest
-from email.message import Message
-from urllib.error import HTTPError
-from unittest.mock import Mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from grvis_safe_web_reader import core as r
+from grvis_safe_web_reader import mcp as m
 
-from grvis_safe_web_reader.core import (
-    MAX_RESPONSE_BYTES,
-    SafetyError,
-    canonical_hostname,
-    fetch_public_text,
-    validate_url,
-)
+BASE={'url':'https://example.com/','domains':['example.com'],'deadline':2,'max_bytes':2097152,'redirects':3,'pdf_pages':30}
+def dns(host,port,**kw): return [(socket.AF_INET,socket.SOCK_STREAM,6,'',('93.184.216.34',port))]
+class Response:
+ def __init__(self,body=b'<main>Article</main>',status=200,headers=None):
+  self.status=status; self.body=body; self.headers={'Content-Type':'text/html; charset=utf-8',**(headers or {})}
+ def getheader(self,key,default=None): return self.headers.get(key,default)
+ def read(self,count): return self.body[:count]
+class Tests(unittest.TestCase):
+ def extract(self,html,ctype='text/html; charset=utf-8'): return r.extract_html(html.encode(),ctype,BASE['url'])
+ def transport(self,responses,job=None):
+  connections=[]
+  for resp in responses:
+   conn=Mock(); conn.getresponse.return_value=resp; connections.append(conn)
+  with patch.object(r,'public_addresses',return_value=dns('',443)),patch.object(r,'PinnedHTTPS',side_effect=connections):
+   return r.fetch_worker(job or dict(BASE)),connections
+ def test_idna_and_unicode_path(self):
+  url,host,_=r.validate_url('HTTPS://BÜCHER.example./ไทย#fragment',['xn--bcher-kva.example'])
+  self.assertEqual(host,'xn--bcher-kva.example'); self.assertIn('%E0',url); self.assertNotIn('#',url)
+ def test_reject_unsafe_url(self):
+  urls=['file:///etc/passwd','http://example.com/','https://u:p@example.com/','https://127.0.0.1/',
+        'https://example.com.attacker.test/','https://example.com:8443/','https://example.com/a\nb','https://example.com/%0d%0aX',
+        'https://example.com/\\x','https://[::1]/']
+  for url in urls:
+   with self.subTest(url=url),self.assertRaises(r.ReaderError): r.validate_url(url,['example.com'])
+ def test_private_and_mixed_dns(self):
+  for address in ['127.0.0.1','10.0.0.1','169.254.169.254','224.0.0.1','::1','2002:0a00:0001::1']:
+   answers=dns('',443)+[(socket.AF_INET,socket.SOCK_STREAM,6,'',(address,443))]
+   with self.subTest(address=address),patch.object(socket,'getaddrinfo',return_value=answers),self.assertRaises(r.ReaderError):
+    r.public_addresses('example.com',443)
+ def test_checked_ip_connection_does_not_resolve_again(self):
+  sock=Mock()
+  with patch.object(socket,'socket',return_value=sock),patch.object(socket,'getaddrinfo',side_effect=AssertionError('Unexpected DNS')):
+   self.assertIs(r.connect_pinned([(socket.AF_INET,socket.SOCK_STREAM,6,('93.184.216.34',443))],1),sock)
+  sock.connect.assert_called_once_with(('93.184.216.34',443))
+ def test_tls_uses_hostname_and_verification(self):
+  conn=r.PinnedHTTPS('example.com',443,dns('',443),2); raw=Mock(); context=Mock(); conn._context=context
+  with patch.object(r,'connect_pinned',return_value=raw): conn.connect()
+  context.wrap_socket.assert_called_once_with(raw,server_hostname='example.com')
+  real=r.ssl.create_default_context(); self.assertTrue(real.check_hostname); self.assertEqual(real.verify_mode,r.ssl.CERT_REQUIRED)
+ def test_hidden_semantic_ancestor(self):
+  result=self.extract('<div hidden><main>Hidden</main></div><p>Visible</p>')
+  self.assertEqual(result['text'],'Visible')
+ def test_same_cleaning_all_fields(self):
+  result=self.extract('<main>Article<a href="/x">News<script>malicious</script></a><table><tr><td>Value<script>bad</script><span hidden>secret</span></td></tr></table></main>')
+  self.assertNotIn('malicious',json.dumps(result)); self.assertNotIn('secret',json.dumps(result)); self.assertEqual(result['tables'][0][0][0]['text'],'Value')
+ def test_main_and_navigation(self):
+  result=self.extract('<nav>Menu</nav><main>Real article</main><div style="display:none">Hidden</div>')
+  self.assertEqual(result['text'],'Real article'); self.assertNotIn('Hidden',result['text_all'])
+ def test_boolean_style_and_aria(self):
+  self.assertEqual(self.extract('<main style aria-hidden>Article</main>')['text'],'Article')
+ def test_base_link_reference_not_authorized(self):
+  result=self.extract('<head><base href="https://other.example/reports/"></head><a href="next">Next</a>')
+  self.assertEqual(result['links'][0]['url'],'https://other.example/reports/next'); self.assertFalse(result['links'][0]['approved_for_fetch'])
+ def test_challenge(self): self.assertEqual(self.extract('<title>Verify you are human</title><p>Complete the CAPTCHA</p>')['status'],'blocked')
+ def test_empty(self): self.assertEqual(self.extract('<html><body></body></html>')['status'],'empty')
+ def test_charset_fallback(self):
+  result=self.extract('<main>Article</main>','text/html; charset=unknown-charset')
+  self.assertEqual(result['status'],'partial'); self.assertIn('encoding_fallback_utf8',result['warnings'])
+ def test_document_depth_budget(self):
+  with self.assertRaises(r.ReaderError): self.extract('<div>'*200+'text'+'</div>'*200)
+ def test_redirect_to_unapproved_host(self):
+  with self.assertRaises(r.ReaderError) as ctx: self.transport([Response(status=302,headers={'Location':'https://bad.example/'})])
+  self.assertEqual(ctx.exception.code,'domain_not_allowed')
+ def test_https_downgrade(self):
+  with self.assertRaises(r.ReaderError) as ctx: self.transport([Response(status=302,headers={'Location':'http://example.com/'})])
+  self.assertEqual(ctx.exception.code,'https_downgrade')
+ def test_redirect_provenance_and_get_only(self):
+  result,conns=self.transport([Response(status=302,headers={'Location':'/next'}),Response()])
+  self.assertEqual(result['source_url'],'https://example.com/next'); self.assertEqual(result['redirect_chain'],['https://example.com/next'])
+  self.assertEqual(conns[0].request.call_args.args[0],'GET'); self.assertNotIn('Cookie',conns[0].request.call_args.kwargs['headers'])
+  self.assertEqual(len(result['content_sha256']),64); self.assertTrue(result['content_is_untrusted_data']); self.assertFalse(result['coverage']['completeness_verified'])
+  for conn in conns: conn.close.assert_called_once()
+ def test_blocked_http(self):
+  for status in [401,403,429]:
+   with self.subTest(status=status),self.assertRaises(r.ReaderError) as ctx: self.transport([Response(status=status)])
+   self.assertEqual(ctx.exception.status,'blocked')
+ def test_response_and_decompression_budgets(self):
+  for response in [Response(body=b'x'*11),Response(headers={'Content-Length':'11'}),Response(body=gzip.compress(b'x'*100),headers={'Content-Encoding':'gzip'})]:
+   job={**BASE,'max_bytes':10 if response.headers.get('Content-Encoding')!='gzip' else 50}
+   with self.assertRaises(r.ReaderError) as ctx: self.transport([response],job)
+   self.assertEqual(ctx.exception.code,'body_limit')
+ def test_non_html_not_read(self):
+  with self.assertRaises(r.ReaderError) as ctx: self.transport([Response(headers={'Content-Type':'application/json'})])
+  self.assertEqual(ctx.exception.code,'unsupported_type')
+ def test_total_timeout(self):
+  with patch.object(subprocess,'run',side_effect=subprocess.TimeoutExpired('worker',2)):
+   self.assertEqual(r.run_job(dict(BASE))['reason'],'deadline')
+ def test_actual_child_deadline(self):
+  with tempfile.TemporaryDirectory() as directory:
+   worker=r.Path(directory)/'worker.py'; worker.write_text('import time; time.sleep(10)',encoding='utf-8')
+   started=time.monotonic()
+   with patch.object(r,'__file__',str(worker)):
+    result=r.run_job({**BASE,'deadline':1})
+   self.assertEqual(result['reason'],'deadline'); self.assertLess(time.monotonic()-started,3)
+ def test_chunks_no_duplicate_full_text(self):
+  result={'status':'ok','text':'x'*25000,'text_all':'extra','coverage':{}}
+  with patch.object(subprocess,'run',return_value=Mock(returncode=0,stdout=json.dumps(result))):
+   output=r.run_job({**BASE,'chunks':True})
+  self.assertNotIn('text',output); self.assertNotIn('text_all',output); self.assertEqual(''.join(output['text_chunks']),'x'*25000)
+ def test_output_budget(self):
+  result={'status':'ok','text':'x'*5000000,'title':'t'*5000000,'tables':[[]],'coverage':{}}
+  output=r.bounded_output(result)
+  self.assertEqual(output['status'],'partial'); self.assertLess(len(json.dumps(output)),4*1024*1024); self.assertTrue(output['coverage']['output_truncated'])
+ def test_batch_failure_continue_and_dedup(self):
+  with patch.object(r,'run_job',side_effect=[{'status':'ok','content_sha256':'same','source_url':'a'},r.failure(BASE,'blocked','blocked','blocked'),{'status':'ok','content_sha256':'same','source_url':'b'}]):
+   output=r.batch_jobs([BASE]*3,20)
+  self.assertEqual(len(output['sources']),3); self.assertEqual(output['sources'][2]['duplicate_of'],'a'); self.assertEqual(output['counts']['blocked'],1)
+ def test_invalid_budgets(self):
+  for key,value in [('deadline',0),('deadline',True),('max_bytes',999999999),('redirects',6),('pdf_pages',101)]:
+   with self.subTest(key=key),self.assertRaises(r.ReaderError): r.validate_job({**BASE,key:value})
+ def test_pdf_page_budget_and_blank(self):
+  if not r.importlib.util.find_spec('pypdf'): self.skipTest('pypdf unavailable')
+  from pypdf import PdfWriter
+  writer=PdfWriter()
+  for _ in range(3): writer.add_blank_page(width=100,height=100)
+  data=io.BytesIO(); writer.write(data)
+  result=r.extract_pdf(data.getvalue(),1)
+  self.assertEqual(result['status'],'partial'); self.assertEqual(result['coverage']['total_pages'],3); self.assertEqual(result['pages'][0]['page'],1)
+  self.assertEqual(r.extract_pdf(data.getvalue(),3)['status'],'empty')
+ def test_pdf_missing_dependency(self):
+  with patch.object(r.importlib.util,'find_spec',return_value=None),self.assertRaises(r.ReaderError) as ctx: r.extract_pdf(b'',1)
+  self.assertEqual(ctx.exception.code,'pdf_dependency_missing')
+ def test_real_pdf_text_and_offsets(self):
+  if not r.importlib.util.find_spec('pypdf') or not r.importlib.util.find_spec('reportlab'): self.skipTest('PDF fixture dependencies unavailable')
+  from reportlab.pdfgen.canvas import Canvas
+  data=io.BytesIO(); canvas=Canvas(data)
+  for text in ['First evidence','Second evidence']:
+   canvas.drawString(30,700,text); canvas.showPage()
+  canvas.save(); result=r.extract_pdf(data.getvalue(),30)
+  self.assertEqual(result['status'],'ok'); self.assertIn('Second evidence',result['text'])
+  for page in result['pages']:
+   self.assertIn(['First evidence','Second evidence'][page['page']-1],result['text'][page['start_char']:page['end_char']])
+   self.assertNotIn('text',page)
+ def test_encrypted_pdf(self):
+  if not r.importlib.util.find_spec('pypdf'): self.skipTest('pypdf unavailable')
+  from pypdf import PdfWriter
+  writer=PdfWriter(); writer.add_blank_page(width=100,height=100); writer.encrypt('test-only-fixture')
+  data=io.BytesIO(); writer.write(data)
+  with self.assertRaises(r.ReaderError) as ctx: r.extract_pdf(data.getvalue(),1)
+  self.assertEqual(ctx.exception.code,'encrypted_pdf')
+ def test_mcp_invalid_arguments(self):
+  server=m.Server(['example.com'])
+  for args in [{'url':BASE['url'],'deadline':True},{'url':[]},{'urls':[]}]:
+   with self.subTest(args=args),self.assertRaises(m.ProtocolError): server.tool('grvis_fetch',args)
+  with self.assertRaises(m.ProtocolError): server.handle({'jsonrpc':'2.0','id':{},'method':'ping'})
+ def test_mcp_lifecycle_and_domain_config(self):
+  server=m.Server(['example.com'])
+  with self.assertRaises(m.ProtocolError): server.handle({'jsonrpc':'2.0','id':1,'method':'tools/list'})
+  result=server.handle({'jsonrpc':'2.0','id':2,'method':'initialize','params':{'protocolVersion':'2025-06-18'}})
+  self.assertEqual(result['protocolVersion'],'2025-06-18')
+  server.handle({'jsonrpc':'2.0','method':'notifications/initialized'})
+  self.assertEqual(len(server.handle({'jsonrpc':'2.0','id':3,'method':'tools/list'})['tools']),3)
+  with self.assertRaises(m.ProtocolError): server.tool('grvis_fetch',{'url':BASE['url'],'domains':['bad.example']})
+  blocked=server.tool('grvis_fetch',{'url':'https://bad.example/'})
+  self.assertTrue(blocked['isError']); self.assertEqual(json.loads(blocked['content'][0]['text'])['reason'],'domain_not_allowed')
+ def test_mcp_actual_stdio_subprocess(self):
+  requests=[{'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':'2025-06-18'}},
+            {'jsonrpc':'2.0','method':'notifications/initialized'}, {'jsonrpc':'2.0','id':2,'method':'tools/list'},
+            {'jsonrpc':'2.0','id':3,'method':'tools/call','params':{'name':'grvis_fetch','arguments':{'url':'https://bad.example/'}}}]
+  proc=subprocess.run([sys.executable,'-m','grvis_safe_web_reader.mcp','--allow-domain','example.com'],input='\n'.join(json.dumps(x) for x in requests)+'\n',capture_output=True,text=True,timeout=5)
+  self.assertEqual(proc.returncode,0); lines=[json.loads(line) for line in proc.stdout.splitlines()]
+  self.assertEqual(len(lines),3); self.assertEqual(lines[1]['id'],2); self.assertTrue(lines[2]['result']['isError'])
 
-
-def public_dns(_host, _port, *, type):
-    return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 0))]
-
-
-def private_dns(_host, _port, *, type):
-    return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 0))]
-
-
-class UrlPolicyTests(unittest.TestCase):
-    def test_accepts_exact_allowlisted_public_https_host(self):
-        with patch("socket.getaddrinfo", public_dns):
-            self.assertEqual(validate_url("https://example.com/page", {"example.com"}), "https://example.com/page")
-
-    def test_rejects_unsafe_or_unapproved_urls(self):
-        cases = [
-            ("file:///etc/passwd", {"example.com"}),
-            ("https://user:pass@example.com/", {"example.com"}),
-            ("https://example.com.attacker.test/", {"example.com"}),
-            ("https://example.com:8443/", {"example.com"}),
-            ("http://example.com:443/", {"example.com"}),
-            ("https://127.0.0.1/", {"127.0.0.1"}),
-        ]
-        with patch("socket.getaddrinfo", public_dns):
-            for url, domains in cases:
-                with self.subTest(url=url), self.assertRaises(SafetyError):
-                    validate_url(url, domains)
-
-    def test_rejects_non_public_dns_answer(self):
-        with patch("socket.getaddrinfo", private_dns):
-            with self.assertRaisesRegex(SafetyError, "non-public"):
-                validate_url("https://example.com/", {"example.com"})
-
-    def test_normalizes_idna_and_rejects_wildcards(self):
-        self.assertEqual(canonical_hostname("BÜCHER.example."), "xn--bcher-kva.example")
-        with self.assertRaises(SafetyError):
-            canonical_hostname("*.example.com")
-
-
-class FetchTests(unittest.TestCase):
-    def response(self, body, content_type="text/html; charset=utf-8"):
-        response = Mock()
-        response.status = 200
-        response.headers = Message()
-        response.headers["Content-Type"] = content_type
-        response.read.return_value = body
-        response.__enter__ = Mock(return_value=response)
-        response.__exit__ = Mock(return_value=False)
-        return response
-
-    def test_extracts_html_as_untrusted_text_and_disables_proxy(self):
-        response = self.response(b"<html><h1>Public</h1><script>secret()</script></html>")
-        opener = Mock()
-        opener.open.return_value = response
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ) as build:
-            result = fetch_public_text("https://example.com/", {"example.com"})
-        self.assertEqual(result["text"], "Public")
-        self.assertTrue(result["content_is_untrusted_data"])
-        self.assertEqual(result["http_status"], 200)
-        self.assertEqual(build.call_args.args[0].proxies, {})
-        request = opener.open.call_args.args[0]
-        self.assertEqual(request.get_method(), "GET")
-        self.assertEqual(opener.open.call_args.kwargs["timeout"], 10)
-
-    def test_rejects_non_html(self):
-        response = self.response(b"{}", "application/json")
-        opener = Mock()
-        opener.open.return_value = response
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ), self.assertRaisesRegex(RuntimeError, "not HTML"):
-            fetch_public_text("https://example.com/", {"example.com"})
-
-    def test_enforces_response_byte_limit(self):
-        response = self.response(b"x" * (MAX_RESPONSE_BYTES + 1))
-        opener = Mock()
-        opener.open.return_value = response
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ), self.assertRaisesRegex(RuntimeError, "2 MiB"):
-            fetch_public_text("https://example.com/", {"example.com"})
-        response.read.assert_called_once_with(MAX_RESPONSE_BYTES + 1)
-
-    def test_preserves_long_text_and_structured_fields(self):
-        body = ('<html><title>Report</title><body><p>' + 'z' * 60000 +
-                '</p><a href="/next">Next</a><img src="/photo.png" alt="photo">'
-                '<table><tr><th>Name</th></tr><tr><td>Big</td></tr></table></body></html>').encode()
-        opener = Mock()
-        opener.open.return_value = self.response(body)
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ):
-            result = fetch_public_text("https://example.com/", {"example.com"})
-        self.assertGreater(len(result["text"]), 50000)
-        self.assertEqual(''.join(result["text_chunks"]), result["text"])
-        self.assertFalse(result["truncated"])
-        self.assertEqual(result["links"][0]["url"], "https://example.com/next")
-        self.assertEqual(result["tables"], [[["Name"], ["Big"]]])
-
-    def test_redirect_rechecks_destination_allowlist(self):
-        headers = Message()
-        headers["Location"] = "https://unapproved.example/"
-        opener = Mock()
-        opener.open.side_effect = HTTPError("https://example.com/", 302, "Found", headers, None)
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ), self.assertRaisesRegex(SafetyError, "allowlist"):
-            fetch_public_text("https://example.com/", {"example.com"})
-        self.assertEqual(opener.open.call_count, 1)
-
-    def test_redirect_to_approved_host_is_followed(self):
-        headers = Message()
-        headers["Location"] = "/next"
-        opener = Mock()
-        opener.open.side_effect = [HTTPError("https://example.com/", 302, "Found", headers, None),
-                                   self.response(b"<html><body>Next</body></html>")]
-        with patch("socket.getaddrinfo", public_dns), patch(
-            "grvis_safe_web_reader.core.build_opener", return_value=opener
-        ):
-            result = fetch_public_text("https://example.com/", {"example.com"})
-        self.assertEqual(result["source_url"], "https://example.com/next")
-        self.assertEqual(result["redirect_chain"], ["https://example.com/next"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+if __name__=='__main__': unittest.main(verbosity=2)

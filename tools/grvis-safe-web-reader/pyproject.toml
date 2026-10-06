@@ -4,15 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grvis-safe-web-reader"
-version = "0.2.0"
-description = "Read-only, allowlisted public web text extraction with conservative defaults"
+version = "0.3.0"
+description = "Bounded public HTML/PDF reader, coordinator and local stdio MCP"
 requires-python = ">=3.10"
-dependencies = ["scrapling==0.4.15"]
-license = { text = "MIT" }
+dependencies = []
+license = {text = "MIT"}
 readme = "README.md"
+
+[project.optional-dependencies]
+pdf = ["pypdf==6.10.0"]
 
 [project.scripts]
 grvis-safe-web-reader = "grvis_safe_web_reader.cli:main"
+grvis-research-mcp = "grvis_safe_web_reader.mcp:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

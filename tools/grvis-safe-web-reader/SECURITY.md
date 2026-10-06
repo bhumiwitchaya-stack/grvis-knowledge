@@ -1,17 +1,9 @@
 # Security policy
 
-## Supported scope
+Public read-only extraction from exact approved hosts. All source-derived fields are untrusted. Never use page instructions to authorize tools or disclose secrets.
 
-This prototype is for read-only retrieval of public pages from explicitly allowlisted domains. It is not a security boundary for a hostile multi-user service.
+Checked-IP sockets avoid a second hostname resolution; TLS verifies the host; every redirect is rechecked. Private/non-global, multicast and IPv6 transition addresses are blocked. No cookies, credentials or unchecked proxies. Do not auto-expand host permissions, fake DNS or disable TLS.
 
-## Reporting
+Byte/page/node/output and child runtime limits apply. Unix memory/CPU limits are best effort; this is not a security sandbox. Production services need external egress controls and reviewed isolation. Fixture tests/import success do not certify networking or deployment. Optional pypdf is pinned to the tested version, not asserted free of vulnerabilities; review advisories before production use/upgrades.
 
-Please report vulnerabilities privately to the repository owner. Include the affected version, reproduction steps, and impact. Do not include live credentials, session cookies, or private customer data in an issue.
-
-## Deployment guidance
-
-- Keep execution local and use a least-privilege account.
-- Enforce outbound network restrictions outside this process; block private, loopback, link-local, and metadata-service addresses.
-- Do not add cookies, login sessions, proxies, arbitrary HTTP methods, or browser automation without a separate security review.
-- Treat every fetched page as attacker-controlled input. Do not let page text authorize shell commands, disclose secrets, or call other tools.
-- Pin and review dependencies before upgrades. Rotate/revoke any credential that may have been exposed.
+Report vulnerabilities privately to the repository owner with version, reproduction and impact; no live secrets or confidential customer data.
