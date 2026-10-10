@@ -16,7 +16,8 @@
     "projects.html",
     "standards.html",
     "history.html",
-    "kpi.html"
+    "kpi.html",
+    "reverse-engineering.html"
   ],
   "s0_static": "GITHUB_FILE_AND_LINK_CHECK_PASS",
   "s1_contract": "NOT_RUNTIME_TESTED",
