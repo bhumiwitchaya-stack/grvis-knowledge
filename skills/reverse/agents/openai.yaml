@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reverse Engineering (GRVIS)"
+  short_description: "Evidence-led system reconstruction"
+  default_prompt: "Use $reverse to reconstruct this target from authorized evidence and verify its behavior."

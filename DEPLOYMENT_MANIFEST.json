@@ -17,11 +17,12 @@
     "standards.html",
     "history.html",
     "kpi.html",
-    "reverse-engineering.html"
+    "reverse-engineering.html",
+    "reverse.html"
   ],
   "s0_static": "GITHUB_FILE_AND_LINK_CHECK_PASS",
   "s1_contract": "NOT_RUNTIME_TESTED",
   "s2_live_platform": "PENDING",
   "s3_held_out": "PENDING",
-  "notes": "Public knowledge is descriptive; Copilot Instructions and configured tools are separate."
+  "notes": "Public knowledge is descriptive; Copilot Instructions and configured tools are separate. The /reverse package is installable in compatible skill hosts; live S2 and held-out S3 remain pending."
 }

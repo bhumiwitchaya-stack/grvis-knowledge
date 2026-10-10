@@ -12,9 +12,18 @@
 - [Operational History, Lessons & Learning](https://bhumiwitchaya-stack.github.io/grvis-knowledge/history.html)
 - [KPI, Data Quality & Deterministic Checks](https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html)
 
-## Installable skill
+## Installable skills
 
-- [GRVIS Reverse Engineering overview](https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse-engineering.html)
+- [/reverse — Reverse Engineering (GRVIS)](https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse.html)
+- [New skill instructions](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/SKILL.md)
+- [New field playbook](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/references/field-playbook.md)
+- [New evaluation matrix](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/references/evaluation-matrix.md)
+- [New report template](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/references/report-template.md)
+- [Complete /reverse package](https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/reverse)
+
+### Earlier compatibility package
+
+- [GRVIS Reverse Engineering compatibility overview](https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse-engineering.html)
 - [Skill instructions](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/SKILL.md)
 - [Field playbook](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/references/field-playbook.md)
 - [Evaluation matrix](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/references/evaluation-matrix.md)

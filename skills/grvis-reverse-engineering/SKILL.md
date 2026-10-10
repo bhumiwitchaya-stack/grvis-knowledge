@@ -1,6 +1,6 @@
 ---
 name: grvis-reverse-engineering
-description: Evidence-first reverse engineering of systems and demonstrations from public posts, videos, screenshots, repositories, binaries, documents, product behavior, workflows, and data. Use when asked to extract a method, infer architecture or rules, reproduce observed behavior, fill technical gaps, or build a verified GRVIS prototype across authorized software, hardware, business, AI, or trading analysis.
+description: Compatibility alias for existing requests that explicitly invoke `$grvis-reverse-engineering`. For new reverse-engineering analysis, use `$reverse` for claim-level evidence, safe tests, and GRVIS verification.
 ---
 
 # GRVIS Reverse Engineering
