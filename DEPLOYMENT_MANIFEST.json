@@ -2,7 +2,22 @@
   "target_url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/",
   "branch": "main",
   "folder": "/(root)",
-  "entry_file": "index.html",
-  "nojekyll": true,
-  "robots_sitemap": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/sitemap.xml"
+  "index": "index.html",
+  "canonical_version": "3.0-RC1",
+  "source_sha_confirmed": false,
+  "live_platform_certification": "PENDING",
+  "held_out_s3": "PENDING",
+  "pages": [
+    "architecture.html",
+    "core.html",
+    "problem-solving.html",
+    "reliability.html",
+    "machine.html",
+    "quality.html",
+    "projects.html",
+    "standards.html",
+    "history.html",
+    "kpi.html"
+  ],
+  "last_updated": "2026-10-10"
 }

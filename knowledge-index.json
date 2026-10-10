@@ -1,56 +1,69 @@
-[
-  {
-    "slug": "core",
-    "title": "GRVIS Core Reference",
-    "source": "00_GRVIS_Core_Reference.md",
-    "path": "/core/"
-  },
-  {
-    "slug": "problem-solving",
-    "title": "Engineering Problem Solving",
-    "source": "01_Engineering_Problem_Solving.md",
-    "path": "/problem-solving/"
-  },
-  {
-    "slug": "reliability",
-    "title": "Maintenance, Reliability & OEE",
-    "source": "02_Maintenance_Reliability_OEE.md",
-    "path": "/reliability/"
-  },
-  {
-    "slug": "machine",
-    "title": "Process & Machine Knowledge",
-    "source": "03_Process_Machine_Knowledge.md",
-    "path": "/machine/"
-  },
-  {
-    "slug": "quality",
-    "title": "Quality, Food Safety & Process Control",
-    "source": "04_Quality_Food_Safety_Process_Control.md",
-    "path": "/quality/"
-  },
-  {
-    "slug": "projects",
-    "title": "Projects & Change Management",
-    "source": "05_Projects_Change_Management_Decisions.md",
-    "path": "/projects/"
-  },
-  {
-    "slug": "standards",
-    "title": "SOP, Standards & Compliance",
-    "source": "06_SOP_Standards_Compliance.md",
-    "path": "/standards/"
-  },
-  {
-    "slug": "history",
-    "title": "Operational History & Lessons Learned",
-    "source": "07_Operational_History_Lessons_Learned.md",
-    "path": "/history/"
-  },
-  {
-    "slug": "kpi",
-    "title": "Data, KPI & Dashboard Definitions",
-    "source": "08_Data_KPI_Dashboard_Definitions.md",
-    "path": "/kpi/"
-  }
-]
+{
+  "title": "GRVIS Ω∞ Public Knowledge Portal",
+  "version": "3.0-RC1",
+  "canonical": "GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md",
+  "release_status": "Architecture Release Candidate; not production-certified",
+  "updated_at": "2026-10-10",
+  "domains": [
+    {
+      "slug": "architecture",
+      "title": "GRVIS v3 Architecture",
+      "description": "สถาปัตยกรรม GRVIS Ω∞ v3.0-RC1, 4 information planes, Agent 0, MiDAS Ω, DVF, durable action",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/architecture.html"
+    },
+    {
+      "slug": "core",
+      "title": "Reasoning, Evidence & Decision Model",
+      "description": "MiDAS Ω, T0–T4, epistemic labels, evidence assurance, context and verification",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/core.html"
+    },
+    {
+      "slug": "problem-solving",
+      "title": "Engineering RCA, 8D & FMEA",
+      "description": "วิศวกรรมเชิงสาเหตุ การแยกสมมติฐาน การยืนยันหลักฐานและมาตรการแก้ไข",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/problem-solving.html"
+    },
+    {
+      "slug": "reliability",
+      "title": "Maintenance, Reliability, OEE & PM",
+      "description": "Reliability metrics, downtime evidence, maintenance strategy, PM optimization and verification",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reliability.html"
+    },
+    {
+      "slug": "machine",
+      "title": "Machine, Process & OEM References",
+      "description": "Machine diagrams, controls, alarms, interlocks, symptoms, evidence and versioned OEM facts",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/machine.html"
+    },
+    {
+      "slug": "quality",
+      "title": "Quality, Food Safety & Process Control",
+      "description": "Quality deviations, control limits, CIP/SIP, traceability and disposition evidence",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/quality.html"
+    },
+    {
+      "slug": "projects",
+      "title": "Projects, CAPEX, Change & FAT/SAT",
+      "description": "Engineering project decisions, EEM, MOC, commissioning, project risks and verification",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/projects.html"
+    },
+    {
+      "slug": "standards",
+      "title": "SOP, Security, Compliance & Governance",
+      "description": "Controlled documents, policy precedence, authorization, risk, approvals and certification",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/standards.html"
+    },
+    {
+      "slug": "history",
+      "title": "Operational History, Lessons & Learning",
+      "description": "Case provenance, recurring losses, lineage, outcome learning and reusable skills",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/history.html"
+    },
+    {
+      "slug": "kpi",
+      "title": "KPI, Data Quality & Deterministic Checks",
+      "description": "KPI contracts, point-in-time state, validation, observability and dashboard reasoning",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html"
+    }
+  ]
+}

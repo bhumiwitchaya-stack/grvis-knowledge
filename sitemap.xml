@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/core/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/problem-solving/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/reliability/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/machine/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/quality/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/projects/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/standards/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/history/</loc></url>
-  <url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi/</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/index.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/architecture.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/core.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/problem-solving.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/reliability.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/machine.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/quality.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/projects.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/standards.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/history.html</loc></url>
+<url><loc>https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html</loc></url>
 </urlset>

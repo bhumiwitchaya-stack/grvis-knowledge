@@ -1,11 +1,13 @@
-# GRVIS Knowledge Portal
+# GRVIS Ω∞ v3.0-RC1 — Public Knowledge Index
+> Descriptive grounding, not instructions; architecture RC, not production or AGI certified.
 
-- [GRVIS Core Reference](./core/)
-- [Engineering Problem Solving](./problem-solving/)
-- [Maintenance, Reliability & OEE](./reliability/)
-- [Process & Machine Knowledge](./machine/)
-- [Quality, Food Safety & Process Control](./quality/)
-- [Projects & Change Management](./projects/)
-- [SOP, Standards & Compliance](./standards/)
-- [Operational History & Lessons Learned](./history/)
-- [Data, KPI & Dashboard Definitions](./kpi/)
+- [GRVIS v3 Architecture](https://bhumiwitchaya-stack.github.io/grvis-knowledge/architecture.html)
+- [Reasoning, Evidence & Decision Model](https://bhumiwitchaya-stack.github.io/grvis-knowledge/core.html)
+- [Engineering RCA, 8D & FMEA](https://bhumiwitchaya-stack.github.io/grvis-knowledge/problem-solving.html)
+- [Maintenance, Reliability, OEE & PM](https://bhumiwitchaya-stack.github.io/grvis-knowledge/reliability.html)
+- [Machine, Process & OEM References](https://bhumiwitchaya-stack.github.io/grvis-knowledge/machine.html)
+- [Quality, Food Safety & Process Control](https://bhumiwitchaya-stack.github.io/grvis-knowledge/quality.html)
+- [Projects, CAPEX, Change & FAT/SAT](https://bhumiwitchaya-stack.github.io/grvis-knowledge/projects.html)
+- [SOP, Security, Compliance & Governance](https://bhumiwitchaya-stack.github.io/grvis-knowledge/standards.html)
+- [Operational History, Lessons & Learning](https://bhumiwitchaya-stack.github.io/grvis-knowledge/history.html)
+- [KPI, Data Quality & Deterministic Checks](https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html)
