@@ -65,5 +65,15 @@
       "description": "KPI contracts, point-in-time state, validation, observability and dashboard reasoning",
       "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html"
     }
+  ],
+  "skills": [
+    {
+      "slug": "grvis-reverse-engineering",
+      "title": "GRVIS Reverse Engineering",
+      "description": "Installable evidence-first workflow for reconstructing authorized software, systems, demonstrations, media, and data behavior; separates observations from hypotheses and requires measurable verification.",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse-engineering.html",
+      "source_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/SKILL.md",
+      "package_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/grvis-reverse-engineering"
+    }
   ]
 }
