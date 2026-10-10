@@ -1,13 +1,12 @@
 {
-  "target_url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/",
+  "canonical_spec": "GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md",
+  "canonical_spec_sha256": "94216caed412881d79329a08d6438175bbcae418c53c8d842c749a913ae522e9",
+  "version": "3.0-RC1",
   "branch": "main",
   "folder": "/(root)",
-  "index": "index.html",
-  "canonical_version": "3.0-RC1",
-  "source_sha_confirmed": false,
-  "live_platform_certification": "PENDING",
-  "held_out_s3": "PENDING",
+  "target_url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/",
   "pages": [
+    "index.html",
     "architecture.html",
     "core.html",
     "problem-solving.html",
@@ -19,5 +18,9 @@
     "history.html",
     "kpi.html"
   ],
-  "last_updated": "2026-10-10"
+  "s0_static": "GITHUB_FILE_AND_LINK_CHECK_PASS",
+  "s1_contract": "NOT_RUNTIME_TESTED",
+  "s2_live_platform": "PENDING",
+  "s3_held_out": "PENDING",
+  "notes": "Public knowledge is descriptive; Copilot Instructions and configured tools are separate."
 }

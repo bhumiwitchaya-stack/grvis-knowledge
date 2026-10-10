@@ -1,22 +1,14 @@
 {
-  "files": [
-    "README.md",
-    "core/index.html",
-    "history/index.html",
-    "index.html",
-    "knowledge-index.json",
-    "kpi/index.html",
-    "llms.txt",
-    "machine/index.html",
-    "problem-solving/index.html",
-    "projects/index.html",
-    "quality/index.html",
-    "reliability/index.html",
-    "robots.txt",
-    "sitemap.xml",
-    "standards/index.html",
-    "styles.css"
-  ],
-  "source_pack": "GRVIS_Copilot365_Knowledge_Domains_v1",
-  "security_note": "Public content only. Do not deploy confidential/internal knowledge."
+  "name": "GRVIS Ω∞ Public Knowledge Portal",
+  "version": "3.0-RC1",
+  "canonical_spec": "GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md",
+  "canonical_sha256": "94216caed412881d79329a08d6438175bbcae418c53c8d842c749a913ae522e9",
+  "status": "Architecture Release Candidate",
+  "production_certified": false,
+  "agi_certified": false,
+  "primary_website": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/",
+  "domains": 10,
+  "s2_live_platform": "PENDING",
+  "s3_held_out": "PENDING",
+  "updated_at": "2026-10-10"
 }
