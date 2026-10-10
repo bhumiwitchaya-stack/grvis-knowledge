@@ -8,7 +8,8 @@ Choose the narrowest route that fits the target. Combine routes only when the ev
 2. Separate post text, captions, auto-captions, human transcript, visible frames, comments, and search snippets. A link or preview is not the full post; a missing transcript is not evidence that no transcript exists.
 3. For video, index observations by timestamp. For screenshots and charts, record visible labels, units, scales, and unreadable regions. Mark OCR/transcription uncertainty.
 4. Convert claims into atomic rows: actor/action/condition/result/metric. Compare advertised outcomes with observable behavior and supporting evidence.
-5. If blocked by login, CAPTCHA, region restriction, or unavailable media, stop at the platform boundary. Report the exact gap and request the smallest useful artifact (text, screenshot, or time-coded clip) while continuing research that does not depend on it.
+5. Treat a post as direct evidence that its author made a statement, not proof that the statement is true. A preview or snippet cannot stand in for inaccessible post text, images, video, or comments.
+6. If blocked by login, CAPTCHA, region restriction, or unavailable media, stop at the platform boundary. Mark source-specific analysis as blocked; do not replace it with generic research or an analogous source. Request the smallest useful artifact (text, screenshot, or time-coded clip) while continuing work that does not depend on it.
 
 ## Software, application, protocol, or device firmware
 
@@ -32,7 +33,7 @@ Build one use-case map per observed task:
 | Dependencies | APIs, model, database, connector, schedule, or service only when evidenced |
 | Acceptance | Observable test and tolerance for each required behavior |
 
-For dashboards, reconstruct metric definitions, denominators, windows, filters, units, and drill-down behavior before drawing conclusions from a chart. Use synthetic or authorized data in prototypes; label fabricated values. For AI agents, capture supplied prompts, model/version, configuration, tools, knowledge sources, and sample I/O when available. Never infer hidden reasoning or claim the demo's internal architecture from its output alone.
+For dashboards, reconstruct metric definitions, denominators, windows, filters, units, and drill-down behavior before drawing conclusions from a chart. Use synthetic or authorized data in prototypes; label fabricated values. For AI agents, capture supplied prompts, model/version, configuration, tools, knowledge sources, and sample I/O when available. Never infer hidden reasoning or claim the demo's internal architecture from its output alone. Distinguish an architecture proposal from a deployed runtime. A model name, agent role, or routing diagram is not evidence that a platform selected that model or ran independent agents; verify with runtime configuration or logs, otherwise mark it unverified.
 
 ## Mechanical or industrial system
 
