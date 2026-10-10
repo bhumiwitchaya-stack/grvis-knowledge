@@ -1,0 +1,4 @@
+interface:
+  display_name: "GRVIS Reverse Engineering"
+  short_description: "Reconstruct systems from evidence and test behavior"
+  default_prompt: "Use $grvis-reverse-engineering to reconstruct this artifact into a tested, evidence-backed model."
