@@ -1,4 +1,4 @@
 interface:
-  display_name: "GRVIS Reverse Engineering"
-  short_description: "Reconstruct systems from evidence and test behavior"
-  default_prompt: "Use $grvis-reverse-engineering to reconstruct this artifact into a tested, evidence-backed model."
+  display_name: "GRVIS Reverse Engineering (Legacy)"
+  short_description: "Compatibility package for existing prompts"
+  default_prompt: "Use $grvis-reverse-engineering only when the user explicitly requests the legacy skill."

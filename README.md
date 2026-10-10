@@ -10,8 +10,9 @@ Release state: Architecture RC; live platform S2 and held-out S3 pending. No AGI
 
 Pages: [GRVIS v3 Architecture](architecture.html) · [Reasoning, Evidence & Decision Model](core.html) · [Engineering RCA, 8D & FMEA](problem-solving.html) · [Maintenance, Reliability, OEE & PM](reliability.html) · [Machine, Process & OEM References](machine.html) · [Quality, Food Safety & Process Control](quality.html) · [Projects, CAPEX, Change & FAT/SAT](projects.html) · [SOP, Security, Compliance & Governance](standards.html) · [Operational History, Lessons & Learning](history.html) · [KPI, Data Quality & Deterministic Checks](kpi.html)
 
-## Installable skill
+## Installable skills
 
-[GRVIS Reverse Engineering](reverse-engineering.html) · [Skill source](skills/grvis-reverse-engineering/SKILL.md) · [Complete package](skills/grvis-reverse-engineering/)
+- [/reverse — Reverse Engineering (GRVIS)](reverse.html) · [Skill source](skills/reverse/SKILL.md) · [Complete package](skills/reverse/)
+- [Earlier GRVIS Reverse Engineering compatibility package](reverse-engineering.html) · [Skill source](skills/grvis-reverse-engineering/SKILL.md) · [Complete package](skills/grvis-reverse-engineering/)
 
-Install the complete folder into a compatible host skills directory. The website does not auto-register the skill in Microsoft 365 Copilot. Package checks and a synthetic forward-test passed; live-platform S2 and held-out S3 evaluation remain pending. The Facebook post supplied for the original request was inaccessible during review, so no claims are made about its contents.
+Install the complete folder into a compatible host skills directory. Slash-command activation depends on host support; this website does not auto-register skills in Microsoft 365 Copilot. `/reverse` package checks and a synthetic forward-test passed for the reviewed revision; live-platform S2 and held-out S3 evaluation remain pending. The Facebook post supplied for the original request was inaccessible during review, so no claims are made about its contents.

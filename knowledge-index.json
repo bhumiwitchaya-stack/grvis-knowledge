@@ -68,6 +68,14 @@
   ],
   "skills": [
     {
+      "slug": "reverse",
+      "title": "/reverse — Reverse Engineering (GRVIS)",
+      "description": "Installable evidence-led workflow for authorized reverse engineering: claim-level provenance, competing hypotheses, safe discriminating tests, measurable reconstruction, and explicit GRVIS verification status.",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse.html",
+      "source_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/SKILL.md",
+      "package_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/reverse"
+    },
+    {
       "slug": "grvis-reverse-engineering",
       "title": "GRVIS Reverse Engineering",
       "description": "Installable evidence-first workflow for reconstructing authorized software, systems, demonstrations, media, and data behavior; separates observations from hypotheses and requires measurable verification.",
