@@ -11,3 +11,11 @@
 - [SOP, Security, Compliance & Governance](https://bhumiwitchaya-stack.github.io/grvis-knowledge/standards.html)
 - [Operational History, Lessons & Learning](https://bhumiwitchaya-stack.github.io/grvis-knowledge/history.html)
 - [KPI, Data Quality & Deterministic Checks](https://bhumiwitchaya-stack.github.io/grvis-knowledge/kpi.html)
+
+## Installable skill
+
+- [GRVIS Reverse Engineering overview](https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse-engineering.html)
+- [Skill instructions](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/SKILL.md)
+- [Field playbook](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/references/field-playbook.md)
+- [Evaluation matrix](https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/references/evaluation-matrix.md)
+- [Complete skill directory](https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/grvis-reverse-engineering)
