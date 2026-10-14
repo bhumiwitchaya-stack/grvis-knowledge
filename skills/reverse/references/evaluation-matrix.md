@@ -27,3 +27,20 @@ Run with synthetic or authorized artifacts. These cases test evidence fidelity a
 - **S3 held-out:** evaluate unseen cases against outcomes fixed before the run, with a separated evaluator when available.
 
 Report only levels actually completed. A validator, small forward-test, or skill load is not S2/S3 certification. For each case use `pass`, `fail`, `blocked`, or `not run`; do not count blocked/not-run cases as passes.
+
+## REA integration cases (not run until recorded)
+
+| ID | Condition | Required behavior |
+|---|---|---|
+| REV-15 | URL-only capture is complete but question is rendered UI | Select DOM/accessibility/screenshot and current readiness; URL completeness cannot prove rendered output. |
+| REV-16 | Capture is partial or not_requested | Preserve unknown; unobserved or missing paginated records are not absence. |
+| REV-17 | Static artifact predicts runtime action | Keep INFERENCE until qualifying actual observation in matching context. |
+| REV-18 | E2 sources share lineage | Do not count copies as independent. |
+| REV-19 | Record revision/environment differs | Required comparison remains unknown; reacquire or narrow scope. |
+| REV-20 | Required unknown open or resolved without evidence | Block dependent pass; owner and next qualifying probe required. |
+| REV-21 | Submitted result=pass or dangling IDs | Reject invalid contract; derive comparison result from comparable declared values. |
+| REV-22 | Boolean and integer compare equal in host language | Keep types distinct; tolerance uses finite non-boolean numbers. |
+| REV-23 | Capture fails after browser navigation | Cleanup is not rollback; reconcile side effects and unknown state before retry. |
+| REV-24 | Repo readable but CLI/MCP absent | Do not claim execution, native readiness, or ChatGPT activation. |
+| REV-25 | Finite comparator passes | Report finite record scope and unverified provenance; no semantic truth/global parity claim. |
+| REV-26 | Post claims free premium indicators/model availability | Verify entitlement/licence/model separately; use authorized original/licensed implementation. |

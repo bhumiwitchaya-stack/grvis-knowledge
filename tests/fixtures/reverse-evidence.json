@@ -1,0 +1,52 @@
+{
+  "schema_version": "grvis-reverse/1",
+  "target": {
+    "id": "owned-chart-fixture",
+    "revision": "fixture-v1"
+  },
+  "environment": {
+    "id": "synthetic-lab",
+    "profile": "Synthetic records; not a TradingView or live capture."
+  },
+  "sources": [
+    {
+      "id": "S-01",
+      "kind": "runtime_observation",
+      "uri": "fixture://owned-chart/timeframe",
+      "location": "synthetic case 1",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "lineage": "fixture-run-1",
+      "coverage": "complete",
+      "target_revision": "fixture-v1",
+      "environment_id": "synthetic-lab"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C-01",
+      "text": "The supplied synthetic record has timeframe 5m.",
+      "kind": "behavioral",
+      "label": "FACT",
+      "tier": "E1",
+      "status": "supported",
+      "evidence": [
+        "S-01"
+      ],
+      "contradictions": []
+    }
+  ],
+  "unknowns": [],
+  "obligations": [
+    {
+      "id": "O-01",
+      "description": "The declared synthetic timeframe value matches 5m.",
+      "kind": "behavioral",
+      "required": true,
+      "source_id": "S-01",
+      "target_revision": "fixture-v1",
+      "environment_id": "synthetic-lab",
+      "expected": "5m",
+      "observed": "5m"
+    }
+  ]
+}
