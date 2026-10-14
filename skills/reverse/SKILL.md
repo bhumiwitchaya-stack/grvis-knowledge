@@ -70,6 +70,14 @@ Track artifact maturity separately: `UNTRUSTED → NORMALIZED → VALIDATED → 
 10. **Verify independently where feasible.** Use deterministic checks for arithmetic, schemas, state transitions, and code; compare outputs to acceptance criteria and source observations. Self-critique is V0, not independent verification. Record mismatches, untested paths, coverage, and falsifiers. Read back authorized external writes.
 11. **Report a traceable result.** Use [report-template.md](references/report-template.md) for T2+ or detailed work. Load [field-playbook.md](references/field-playbook.md) for the applicable domain and [evaluation-matrix.md](references/evaluation-matrix.md) when testing skill behavior. Keep quotes and reproduced source material brief and lawful.
 
+## Software providers and finite reconstruction contracts
+
+For software/UI reconstruction, load [rea-workflow.md](references/rea-workflow.md). Use actual capability/schema/version discovery, state-specific readiness and question-specific captures. Preserve REA Evidence IDs, effective limits, source completeness and residual unknowns; missing or not-requested evidence never establishes absence. REA capture version labels are not GRVIS V assurance levels.
+
+Compile one finite obligation per declared requirement with source, behavioral/static kind, expected outcome/tolerance, environment, revision, owner and required/optional status. Use `tools/reverse_workbench.py` from the GRVIS knowledge repository for bounded offline record comparison when available. Its pass means submitted comparable values match; it does not execute the target, authenticate provenance, certify truth, prove global parity or activate REA. Read the repository's workbench guide for schema and exit semantics. If unavailable, continue the ledger manually and report the deterministic check as not run.
+
+Build an independent implementation from an authorized behavior specification using original/licensed code and formulas. Public accessibility and REA's license do not grant target premium entitlements, data rights, or hidden-source access. For chart/quant work use explicit data/cost/fill/held-out contracts and Binance Futures for BiG's trading prices.
+
 ## Verification and release gates
 
 Keep evidence assurance and evaluation stage distinct:
@@ -102,7 +110,8 @@ Claim only levels actually completed. A valid package, one forward-test, or a su
 - [Field playbook](references/field-playbook.md)
 - [Evaluation matrix](references/evaluation-matrix.md)
 - [Report template](references/report-template.md)
+- [REA-informed software workflow](references/rea-workflow.md)
 - [OWASP Mobile Application Security Testing Guide (MASTG)](https://mas.owasp.org/MASTG/) — authoritative mobile application testing and reverse-engineering knowledge; apply only to its scope.
 - [NIST SP 800-115](https://csrc.nist.gov/pubs/sp/800/115/final) — technical information-security testing and assessment guidance; it does not grant test authorization.
 - [NSA Ghidra documentation](https://github.com/NationalSecurityAgency/ghidra/tree/master/GhidraDocs) — official software analysis framework documentation; tool output remains evidence to interpret, not proof by itself.
-- Apply `GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md` when available as project canonical. The supplied Copilot kernel is an adaptation and does not prove the host has every GRVIS runtime capability.
+- Apply the project's explicitly selected, accessible current canonical. The supplied v3.0-RC1 kernel is a historical baseline and does not prove runtime capability; never promote a newer canonical from memory, a roadmap, or this extension alone.

@@ -17,6 +17,13 @@ Pages: [GRVIS v3 Architecture](architecture.html) · [Reasoning, Evidence & Deci
 
 Install the complete folder into a compatible host skills directory. Slash-command activation depends on host support; this website does not auto-register skills in Microsoft 365 Copilot. `/reverse` package checks and a synthetic forward-test passed for the reviewed revision; live-platform S2 and held-out S3 evaluation remain pending. The Facebook post supplied for the original request was inaccessible during review, so no claims are made about its contents.
 
+
+## REA-informed /reverse extension — Candidate v0.1
+
+[Detailed GRVIS adaptation (Thai)](docs/GRVIS_REA_ADAPTATION_TH.md) · [Finite record workbench](docs/REVERSE_WORKBENCH.md) · [REA workflow reference](skills/reverse/references/rea-workflow.md)
+
+Adds actual provider capability discovery, question-specific captures, residual unknowns, finite reconstruction obligations, and an offline comparator with deterministic CI fixtures. The comparator checks submitted records, not source authenticity or live target behavior. Native/browser/ChatGPT activation and independent held-out gates remain separate. See TaskPlanner and the verification report for actual tested revision/status.
+
 <!-- TASKPLANNER:ATTRIBUTION:START -->
 This project uses [TaskPlanner](https://github.com/smekai/taskplanner) for task planning.
 <!-- TASKPLANNER:ATTRIBUTION:END -->

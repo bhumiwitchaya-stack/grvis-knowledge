@@ -1,0 +1,70 @@
+name: GRVIS reverse contracts
+on:
+  pull_request:
+    paths:
+      - 'tools/**'
+      - 'tests/**'
+      - 'skills/reverse/**'
+      - '.tasks/**'
+      - '.github/workflows/grvis-reverse.yml'
+  push:
+    branches: [codex/grvis-rea-framework-20261014, main]
+    paths:
+      - 'tools/**'
+      - 'tests/**'
+      - 'skills/reverse/**'
+      - '.tasks/**'
+      - '.github/workflows/grvis-reverse.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test bounded offline contracts
+        shell: bash
+        run: |
+          mkdir -p results
+          python -m unittest discover -s tests -v 2>&1 | tee results/unit-tests.txt
+          python tools/reverse_workbench.py tests/fixtures/reverse-evidence.json | tee results/record-comparison.json
+          python -m py_compile tools/reverse_workbench.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reverse-contracts-${{ matrix.os }}
+          path: results/
+          retention-days: 7
+  rea-owned-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pin and observe REA on an owned static fixture
+        shell: bash
+        run: |
+          mkdir -p results
+          npm exec --yes --package=rea-agents@6.4.0 -- rea capabilities --json > results/rea-capabilities.json
+          npm exec --yes --package=rea-agents@6.4.0 -- rea analyze-javascript-application "$GITHUB_WORKSPACE/tests/fixtures/chart-app" --json > results/rea-fixture-evidence.json
+          python tools/verify_rea_smoke.py results/rea-fixture-evidence.json | tee results/rea-smoke-check.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rea-owned-static-fixture
+          path: results/
+          retention-days: 7

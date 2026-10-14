@@ -19,6 +19,8 @@
 | P06 | Claude Opus 5.5 เป็นโมเดลที่ต้องใช้ | โพสต์กล่าวชื่อ แต่ยังไม่มีการตรวจ registry/host availability สำหรับชื่อนั้น | UNCERTAIN; interface ต้อง vendor-neutral และตรวจ model จริง |
 | P07 | backtest รวม fees/slippage/drawdown แล้วพิสูจน์ความสามารถ | ต้องมี fill semantics, data integrity, regime coverage และ held-out; list ปัจจัยไม่ใช่ผลการทดลอง | UNCERTAIN สำหรับระบบในโพสต์ |
 
+TradingView policies ที่ตรวจระบุข้อจำกัดเรื่อง non-display/automated uses และการ decompile/derivative works โดยไม่มีสิทธิ์แยกต่างหาก (§3); ต้องตรวจสิทธิ์ของ target operation จริงก่อนทำ และใช้ข้อมูล Binance Futures ตาม data source policy ของ BiG ในระบบที่พัฒนาเอง การมี licence ของ REA ไม่ได้เปลี่ยนข้อจำกัดของ TradingView
+
 ไม่มีการใช้ search snippets, copied README หรือ star count เป็นหลักฐานความถูกต้องของอัลกอริทึม การอ่าน source code รองรับเฉพาะรุ่นและส่วนที่อ่าน; การไม่พบจาก page ที่ partial ไม่ใช่ absence
 
 ## 3. Decision
@@ -140,5 +142,7 @@ The copied attachment paths belong to a failed execution environment in this tur
 - Readiness conformance: https://github.com/morluto/rea/blob/d901561640121272bf1498d85e38e1ac8b3f5793/docs/reconstruction-readiness.md
 - Browser scenario contract: https://github.com/morluto/rea/blob/d901561640121272bf1498d85e38e1ac8b3f5793/docs/browser-scenario-contract.md
 - Upstream LICENSE: https://github.com/morluto/rea/blob/d901561640121272bf1498d85e38e1ac8b3f5793/LICENSE
+- Binance USDⓈ-M Futures klines: https://developers.binance.com/en/docs/products/derivatives-trading-usds-futures/market-data/rest-api/Kline-Candlestick-Data
+- Official REA 6.4.0 release: https://github.com/morluto/rea/releases/tag/rea-agents-6.4.0
 - Lightweight Charts: https://tradingview.github.io/lightweight-charts/
 - TradingView policies: https://www.tradingview.com/policies/

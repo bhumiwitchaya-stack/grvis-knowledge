@@ -14,6 +14,12 @@
 - Severity / action risk / data sensitivity: T__ / R__ / D__
 - Material risk dimensions: probability / impact / detectability / reversibility / failure spread
 
+### Provider / capture contract
+- Actual provider/CLI/MCP version and advertised capability:
+- Initial state, input/control, readiness predicate, capture selection and numeric budgets:
+- Evidence identity, scope/completeness, environment and source revision:
+- Lifecycle/cleanup, observed side effects and OUTCOME_UNKNOWN if applicable:
+
 ## 3. Evidence inventory
 | ID | Artifact/source and exact location | Version/ref/hash/time | Retrieval and coverage | Missing or integrity limits |
 |---|---|---|---|---|
@@ -35,6 +41,16 @@
 |---|---|---|---|---|
 | U-01 |  |  |  |  |
 
+### Residual unknown register
+| ID / revision | Question / kind | Required / owner | Evidence for / against | Next probe / qualifying resolution |
+|---|---|---|---|---|
+| U-01 | | | | |
+
+### Finite obligation ledger
+| ID | Requirement / kind | Source / revision / environment | Expected / tolerance | Required / owner | Observation / test / result |
+|---|---|---|---|---|---|
+| O-01 | | | | | |
+
 ## 7. Reconstruction / prototype
 - Observable rules and interfaces:
 - Data schema, formulas, state, and error handling:
@@ -49,6 +65,8 @@
 - Verification evidence: V0 / V1 / V2 / V3 / V4 (state each completed type)
 - Evaluation stage: S0 / S1 / S2 / S3 (state only completed levels)
 - External state readback, if applicable:
+- Comparator scope and source authenticity independently checked:
+- Known omissions, not-requested sections, partial pages and required open unknowns:
 
 ## 9. Risks, alternatives, and next step
 - Highest material risks and mitigations:
