@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Owned chart state fixture</title>
+<button id="five">5m</button><button id="one">1m</button>
+<output id="state" data-timeframe="1m">Timeframe: 1m</output>
+<script>
+for (const [id, value] of [['five','5m'],['one','1m']]) {
+  document.getElementById(id).onclick = () => {
+    const state = document.getElementById('state');
+    state.dataset.timeframe = value; state.textContent = `Timeframe: ${value}`;
+  };
+}
+</script>

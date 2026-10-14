@@ -8,7 +8,7 @@ on:
       - '.tasks/**'
       - '.github/workflows/grvis-reverse.yml'
   push:
-    branches: [codex/grvis-rea-framework-20261014, main]
+    branches: [codex/grvis-rea-framework-20261014, codex/reverse-host-s3-20261014, main]
     paths:
       - 'tools/**'
       - 'tests/**'
@@ -68,3 +68,37 @@ jobs:
           name: rea-owned-static-fixture
           path: results/
           retention-days: 7
+
+  rea-live-owned-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned providers and verify owned fixtures
+        shell: bash
+        run: |
+          mkdir -p results
+          npm install --prefix "$RUNNER_TEMP/rea" rea-agents@6.4.0 --ignore-scripts --no-audit --no-fund
+          curl --fail --location --retry 2 'https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip' -o "$RUNNER_TEMP/ghidra.zip"
+          echo "ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db  $RUNNER_TEMP/ghidra.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/ghidra.zip" -d "$RUNNER_TEMP/ghidra"
+          export GHIDRA_INSTALL_DIR="$RUNNER_TEMP/ghidra/ghidra_12.1.4_PUBLIC"
+          gcc -O0 -g tests/fixtures/native-rule.c -o "$RUNNER_TEMP/grvis-rule"
+          "$RUNNER_TEMP/rea/node_modules/.bin/rea" capabilities --json > results/rea-live-capabilities.json
+          python tools/verify_rea_live.py --rea "$RUNNER_TEMP/rea/node_modules/.bin/rea" --browser /usr/bin/google-chrome --native "$RUNNER_TEMP/grvis-rule"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rea-live-owned-fixtures
+          path: results/
+          retention-days: 30
