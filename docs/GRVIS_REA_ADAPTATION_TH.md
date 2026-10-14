@@ -1,6 +1,7 @@
 # GRVIS: REA Investigation and Reconstruction Extension — Candidate v0.1
 วันที่ตรวจ: 14 ตุลาคม 2026 (Asia/Bangkok)
 สถานะ: extension candidate สำหรับ /reverse; ไม่ใช่การเลื่อนสถานะ Canonical ของ GRVIS ทั้งระบบ
+ผลตรวจจริง: [GRVIS_REA_VERIFICATION.md](GRVIS_REA_VERIFICATION.md) — 38 tests ผ่านบน Linux/Windows และ REA static CLI fixture ผ่านใน CI; native/browser/ChatGPT-host และ held-out ยังไม่ตรวจ
 
 ## 1. Reasoning Summary
 เป้าหมายคือเพิ่มความสามารถ GRVIS จากการอธิบายหลักการไปสู่การสำรวจที่มีขอบเขต เก็บหลักฐาน สร้างสเปก และตรวจผลที่ทำซ้ำได้ แนวทางจากโพสต์ใช้ได้เป็นโจทย์ แต่ความนิยม ชื่อโมเดล และคำกล่าวอ้างเรื่อง premium ไม่ใช่ผลทดสอบ

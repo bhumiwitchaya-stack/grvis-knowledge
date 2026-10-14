@@ -20,7 +20,7 @@ Install the complete folder into a compatible host skills directory. Slash-comma
 
 ## REA-informed /reverse extension — Candidate v0.1
 
-[Detailed GRVIS adaptation (Thai)](docs/GRVIS_REA_ADAPTATION_TH.md) · [Finite record workbench](docs/REVERSE_WORKBENCH.md) · [REA workflow reference](skills/reverse/references/rea-workflow.md)
+[Detailed GRVIS adaptation (Thai)](docs/GRVIS_REA_ADAPTATION_TH.md) · [Finite record workbench](docs/REVERSE_WORKBENCH.md) · [Actual verification](docs/GRVIS_REA_VERIFICATION.md) · [REA workflow reference](skills/reverse/references/rea-workflow.md)
 
 Adds actual provider capability discovery, question-specific captures, residual unknowns, finite reconstruction obligations, and an offline comparator with deterministic CI fixtures. The comparator checks submitted records, not source authenticity or live target behavior. Native/browser/ChatGPT activation and independent held-out gates remain separate. See TaskPlanner and the verification report for actual tested revision/status.
 
