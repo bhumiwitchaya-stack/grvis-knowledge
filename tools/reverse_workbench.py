@@ -3,6 +3,7 @@ import argparse
 import datetime as dt
 import json
 import math
+import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -236,6 +237,8 @@ def load_document(path):
                       parse_constant=lambda value: (_ for _ in ()).throw(ValueError("non-finite JSON constant")))
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", help="GRVIS JSON evidence-record file; never executed")
     args = parser.parse_args()

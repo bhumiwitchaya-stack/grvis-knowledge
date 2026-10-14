@@ -2,6 +2,9 @@
 import copy
 import importlib.util
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("workbench", ROOT / "tools/reverse_workbench.py")
 workbench = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(workbench)
-BASE = json.loads((ROOT / "tests/fixtures/reverse-evidence.json").read_text())
+BASE = json.loads((ROOT / "tests/fixtures/reverse-evidence.json").read_text(encoding="utf-8"))
 
 class ContractTests(unittest.TestCase):
     def setUp(self):
@@ -165,6 +168,17 @@ class ContractTests(unittest.TestCase):
     def test_record_budget(self):
         self.doc["sources"] = [self.doc["sources"][0]] * 501
         self.assertEqual(self.result()[1], 3)
+
+    def test_cli_utf8_roundtrip(self):
+        self.doc["obligations"][0]["id"] = "ผล-01"
+        with tempfile.TemporaryDirectory() as directory:
+            p = Path(directory) / "ไทย.json"
+            p.write_text(json.dumps(self.doc, ensure_ascii=False), encoding="utf-8")
+            completed = subprocess.run([sys.executable, str(ROOT / "tools/reverse_workbench.py"), str(p)],
+                capture_output=True, env={**os.environ, "PYTHONIOENCODING": "cp1252"}, timeout=10)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            output = json.loads(completed.stdout.decode("utf-8"))
+            self.assertEqual(output["obligations"][0]["id"], "ผล-01")
 
     def test_json_duplicate_keys(self):
         with tempfile.TemporaryDirectory() as directory:

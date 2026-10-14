@@ -54,14 +54,16 @@ Source kind/coverage, target revision and environment must qualify. Partial, una
 | invalid | Schema, references, IDs, types, tiers or assertion rules invalid | 3 |
 
 Known required divergence takes precedence over unknown; both remain visible in the output. Optional failures do not change required-obligation readiness and remain in individual results. Every successful evaluation retains provenance_authenticity=not_verified.
+Ordered arrays are exact value comparisons, not a concurrent/partial-order trace matcher. Use a verified trace comparator and an explicit ordering/alignment contract for concurrent systems.
+
 This tool neither acquires source evidence nor authenticates declared observed values, timestamps, lineages, hashes, context, authority, or semantic relevance. Never use its pass as target verification without separate acquisition proof.
 
 ## Budgets and failure boundaries
-CLI input: 2 MiB maximum, 500 records per collection, depth 50; duplicate JSON keys and non-finite numbers are rejected. Read one input file and write JSON to stdout. No shell, eval, network, target execution, or file mutation.
+CLI input: 2 MiB maximum, 500 records per collection, depth 50; duplicate JSON keys and non-finite numbers are rejected. Read one UTF-8 input file and write UTF-8 JSON to stdout. No shell, eval, network, target execution, or file mutation.
 Python programmatic callers should apply the same byte budget before parsing; the 2 MiB limit is enforced by the CLI loader. Limits constrain input processing, not authenticity or a production sandbox.
 
 ## Tests
-31 synthetic contract tests exercise partial/not-requested, stale context, missing values, source-kind confusion, false independence, contradictions, unresolved unknowns, injected pass, dangling references, tolerance boundaries, boolean/numeric distinctions, malformed types, credential URI, timestamp/schema/record/depth limits and duplicate JSON keys.
+32 synthetic contract tests exercise partial/not-requested, stale context, missing values, source-kind confusion, false independence, contradictions, unresolved unknowns, injected pass, dangling references, tolerance boundaries, boolean/numeric distinctions, malformed types, credential URI, timestamp/schema/record/depth limits and duplicate JSON keys and a UTF-8 CLI roundtrip under a legacy output encoding.
 Repository checks cover board integrity and actual skill metadata/references. GitHub Actions runs those checks on Linux and Windows.
 A separate job installs rea-agents@6.4.0 on Node 24.11.0, records actual capabilities and analyzes only the source-owned chart JavaScript fixture. The smoke checker verifies the returned Evidence identity and expected export; it does not translate the entire REA Evidence schema or claim native/browser/host activation.
 Read workflow logs and artifacts for the exact tested commit before claiming these jobs passed. Fixtures and author-written tests are not independent held-out evaluation.

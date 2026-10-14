@@ -27,7 +27,7 @@ Use tools/reverse_workbench.py on a grvis-reverse/1 record file when determinist
 - unknown: missing/stale/context-mismatched/partial/not-requested observations or required open unknown
 - invalid: malformed/dangling/duplicate/unsupported record contract or unsupported FACT assertion
 
-The tool reports provenance_authenticity=not_verified even on pass. Validate source acquisition separately; finite pass is not global parity, absence proof, production certification or S2/S3.
+Ordered arrays are value comparisons, not a concurrent trace matcher; use a verified provider comparator and explicit partial-order/finite-trace semantics where needed. The tool reports provenance_authenticity=not_verified even on pass. Validate source acquisition separately; finite pass is not global parity, absence proof, production certification or S2/S3.
 CLI: python3 tools/reverse_workbench.py PATH.json
 Exit codes: 0 pass; 1 fail; 2 unknown; 3 invalid. No network requests, target execution, Python eval or external writes occur.
 
