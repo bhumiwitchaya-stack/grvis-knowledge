@@ -16,3 +16,7 @@ Pages: [GRVIS v3 Architecture](architecture.html) · [Reasoning, Evidence & Deci
 - [Earlier GRVIS Reverse Engineering compatibility package](reverse-engineering.html) · [Skill source](skills/grvis-reverse-engineering/SKILL.md) · [Complete package](skills/grvis-reverse-engineering/)
 
 Install the complete folder into a compatible host skills directory. Slash-command activation depends on host support; this website does not auto-register skills in Microsoft 365 Copilot. `/reverse` package checks and a synthetic forward-test passed for the reviewed revision; live-platform S2 and held-out S3 evaluation remain pending. The Facebook post supplied for the original request was inaccessible during review, so no claims are made about its contents.
+
+<!-- TASKPLANNER:ATTRIBUTION:START -->
+This project uses [TaskPlanner](https://github.com/smekai/taskplanner) for task planning.
+<!-- TASKPLANNER:ATTRIBUTION:END -->
