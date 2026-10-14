@@ -1,14 +1,14 @@
 # In Progress
 
-## TASK-001: Verify supplied REA claims and pin authoritative sources
+## TASK-002: Implement GRVIS reverse investigation contracts and skill extension
 **Priority:** P1 | **Tags:** reverse, rea, verification
 
-Compare the user-supplied post with upstream evidence; distinguish current capability, roadmap, and unverified claims.
+Add a provider-neutral workflow, finite record comparator and residual-unknown discipline.
 
 ### Plan
 
-- Read official upstream docs at a fixed commit.
-- Record source scope, contradictions and limits.
-- Write the GRVIS adaptation decision.
+- Extend existing reverse skill.
+- Implement bounded offline comparator.
+- Prepare synthetic fixtures and report template.
 
 ---
