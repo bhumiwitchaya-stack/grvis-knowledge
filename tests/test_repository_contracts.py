@@ -1,10 +1,12 @@
-"""Repository and skill metadata checks on the actual checkout."""
+"""Portal and repository contracts; skill packages live in the canonical workbench."""
 import json
 import re
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL = "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench"
+
 
 class RepositoryTests(unittest.TestCase):
     def test_taskplanner_version_and_files(self):
@@ -19,35 +21,39 @@ class RepositoryTests(unittest.TestCase):
         ids = []
         for filename in config["states"].values():
             ids.extend(re.findall(r"^## (TASK-\d+):", (ROOT / ".tasks" / filename).read_text(encoding="utf-8"), re.M))
-        self.assertEqual(len(ids), 4)
+        self.assertEqual(len(ids), 5)
         self.assertEqual(len(ids), len(set(ids)))
-        self.assertEqual(config["nextId"], 5)
+        self.assertEqual(config["nextId"], 6)
 
-    def test_skill_frontmatter_and_budget(self):
-        content = (ROOT / "skills/reverse/SKILL.md").read_text(encoding="utf-8")
-        front = content.split("---", 2)[1]
-        self.assertEqual(re.findall(r"^([a-z_]+):", front, re.M), ["name", "description"])
-        self.assertIn("name: reverse", front)
-        self.assertLess(len(content.splitlines()), 500)
+    def test_duplicate_skill_and_workbench_payloads_are_removed(self):
+        for path in (
+            ROOT / "skills/reverse",
+            ROOT / "skills/grvis-reverse-engineering",
+            ROOT / "tools/reverse_workbench.py",
+            ROOT / "tests/test_reverse_workbench.py",
+            ROOT / "tests/fixtures/reverse-evidence.json",
+            ROOT / "docs/REVERSE_WORKBENCH.md",
+        ):
+            self.assertFalse(path.exists(), path)
 
-    def test_skill_relative_references(self):
-        folder = ROOT / "skills/reverse"
-        for path in [folder / "SKILL.md", *folder.glob("references/*.md")]:
-            for target in re.findall(r"\[[^\]]*\]\(([^)]+)\)", path.read_text(encoding="utf-8")):
-                if target.startswith(("http:", "https:", "#", "mailto:")):
-                    continue
-                self.assertTrue((path.parent / target.split("#", 1)[0]).exists(), (path, target))
+    def test_portal_points_to_canonical_skills_and_reader(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        llms = (ROOT / "llms.txt").read_text(encoding="utf-8")
+        page = (ROOT / "reverse.html").read_text(encoding="utf-8")
+        index = json.loads((ROOT / "knowledge-index.json").read_text(encoding="utf-8"))
+        for text in (readme, llms, page):
+            self.assertIn(CANONICAL, text)
+            self.assertNotIn("grvis-knowledge/blob/main/skills/", text)
+        self.assertEqual({item["slug"] for item in index["skills"]}, {"find", "reverse"})
+        for item in index["skills"]:
+            self.assertTrue(item["source_url"].startswith(CANONICAL + "/blob/main/skills/"))
+            self.assertTrue(item["package_url"].startswith(CANONICAL + "/tree/main/skills/"))
 
-    def test_no_extra_skill_frontmatter(self):
-        content = (ROOT / "skills/reverse/SKILL.md").read_text(encoding="utf-8")
-        self.assertTrue(content.startswith("---\nname: reverse\n"))
-        self.assertIn("references/rea-workflow.md", content)
-
-    def test_metadata_prompt_and_length(self):
-        text = (ROOT / "skills/reverse/agents/openai.yaml").read_text(encoding="utf-8")
-        self.assertIn("$reverse", text)
-        description = re.search(r'short_description: "([^"]+)"', text).group(1)
-        self.assertTrue(25 <= len(description) <= 64)
+    def test_retired_bookmark_page_is_a_tombstone(self):
+        page = (ROOT / "reverse-engineering.html").read_text(encoding="utf-8")
+        self.assertIn("retired duplicate", page)
+        self.assertIn(CANONICAL + "/blob/main/skills/reverse/SKILL.md", page)
+        self.assertNotIn("Earlier SKILL.md", page)
 
 if __name__ == "__main__":
     unittest.main()

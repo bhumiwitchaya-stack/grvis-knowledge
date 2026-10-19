@@ -3,7 +3,7 @@
   "version": "3.0-RC1",
   "canonical": "GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md",
   "release_status": "Architecture Release Candidate; not production-certified",
-  "updated_at": "2026-10-10",
+  "updated_at": "2026-10-19",
   "domains": [
     {
       "slug": "architecture",
@@ -68,20 +68,20 @@
   ],
   "skills": [
     {
-      "slug": "reverse",
-      "title": "/reverse — Reverse Engineering (GRVIS)",
-      "description": "Installable evidence-led workflow for authorized reverse engineering: claim-level provenance, competing hypotheses, safe discriminating tests, measurable reconstruction, and explicit GRVIS verification status.",
-      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse.html",
-      "source_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/reverse/SKILL.md",
-      "package_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/reverse"
+      "slug": "find",
+      "title": "/find — GRVIS Source Research",
+      "description": "Canonical public-source research skill. Uses GRVIS Research Cloud and the bounded local Safe Web Reader together on the same explicit URLs when both are exposed; reports route-specific coverage.",
+      "url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/tree/main/skills/find",
+      "source_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/blob/main/skills/find/SKILL.md",
+      "package_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/tree/main/skills/find"
     },
     {
-      "slug": "grvis-reverse-engineering",
-      "title": "GRVIS Reverse Engineering",
-      "description": "Installable evidence-first workflow for reconstructing authorized software, systems, demonstrations, media, and data behavior; separates observations from hypotheses and requires measurable verification.",
-      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse-engineering.html",
-      "source_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/blob/main/skills/grvis-reverse-engineering/SKILL.md",
-      "package_url": "https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/main/skills/grvis-reverse-engineering"
+      "slug": "reverse",
+      "title": "/reverse — Reverse Engineering (GRVIS)",
+      "description": "Canonical evidence-led workflow for authorized reverse engineering using finite acceptance checks and the shared GRVIS research workbench.",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse.html",
+      "source_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/blob/main/skills/reverse/SKILL.md",
+      "package_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/tree/main/skills/reverse"
     }
   ]
 }

@@ -20,9 +20,9 @@
     "reverse-engineering.html",
     "reverse.html"
   ],
-  "s0_static": "GITHUB_FILE_AND_LINK_CHECK_PASS",
+  "s0_static": "PENDING_FOR_CONSOLIDATION",
   "s1_contract": "NOT_RUNTIME_TESTED",
   "s2_live_platform": "PENDING",
   "s3_held_out": "PENDING",
-  "notes": "Public knowledge is descriptive; Copilot Instructions and configured tools are separate. The /reverse package is installable in compatible skill hosts; live S2 and held-out S3 remain pending."
+  "notes": "This portal contains descriptive summaries, not installable skill copies. The canonical /find and /reverse packages and the Safe Web Reader live in grvis-research-workbench. Live host activation and held-out evaluation remain separate."
 }
