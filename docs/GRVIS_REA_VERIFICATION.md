@@ -48,7 +48,10 @@ This exercises skill use in a separate context on shared authored artifacts. It 
 - No benchmark supports a claim that the extension is universally faster or better in every dimension. The adaptation report defines baseline metrics for subsequent measurement.
 - Constitutional/canonical promotion of the whole GRVIS system is outside this extension's release gate.
 
-## Reproduce the finite tests
+## Reproduce the historical finite tests
+
+The commands below apply to the historical source revision [ff0ca39](https://github.com/bhumiwitchaya-stack/grvis-knowledge/tree/ff0ca39e477ff05f56f177dfc4fa683dbbc0060a), before the portal consolidation removed its local comparator and fixture. They are not runnable from the current portal checkout. The canonical skill packages, reader, and current test suite now live in [GRVIS Research Workbench](https://github.com/bhumiwitchayasig-bit/grvis-research-workbench); use that repository's current README and tests for present-day verification.
+
 ```sh
 python3 -m unittest discover -s tests -v
 python3 tools/reverse_workbench.py tests/fixtures/reverse-evidence.json
