@@ -14,6 +14,7 @@ on:
       - '.tasks/**'
       - 'tests/**'
       - 'tools/**'
+      - 'skills/**'
       - '.github/workflows/grvis-reverse.yml'
   push:
     branches: [main]
@@ -29,6 +30,7 @@ on:
       - '.tasks/**'
       - 'tests/**'
       - 'tools/**'
+      - 'skills/**'
       - '.github/workflows/grvis-reverse.yml'
   workflow_dispatch:
 permissions:
