@@ -79,7 +79,7 @@
       "slug": "reverse",
       "title": "/reverse — Reverse Engineering (GRVIS)",
       "description": "Canonical evidence-led workflow for authorized reverse engineering using finite acceptance checks and the shared GRVIS research workbench.",
-      "url": "reverse.html",
+      "url": "https://bhumiwitchaya-stack.github.io/grvis-knowledge/reverse.html",
       "source_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/blob/main/skills/reverse/SKILL.md",
       "package_url": "https://github.com/bhumiwitchayasig-bit/grvis-research-workbench/tree/main/skills/reverse"
     }
