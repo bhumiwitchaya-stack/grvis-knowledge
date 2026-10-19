@@ -6,3 +6,5 @@
 
 - 2026-10-14: TASK-001 source review completed; upstream d901561640121272bf1498d85e38e1ac8b3f5793; see docs/GRVIS_REA_ADAPTATION_TH.md.
 - 2026-10-19: Merged Research Workbench PR #13 and knowledge portal PR #9 after CI passed. The repository packages and portal duplicates are consolidated. The connected Skills workspace push for the canonical `/find` and `/reverse` packages plus removal of the two hashed copies was rejected with HTTP 422; after fetch, `origin/master` remained at 659c639 and the active skill list still showed two `/find` and two `/reverse` packages. Runtime deactivation is therefore not complete; keep TASK-005 In Progress until the Skills workspace accepts the sync.
+
+- 2026-10-19 runtime check: this host exposes GRVIS Research Cloud capability/fetch/batch tools but no local Safe Web Reader MCP tools. The dual-provider workflow is present in the canonical repository and passed CI, but paired live retrieval cannot be exercised in this host until the local reader is exposed.
