@@ -1,4 +1,0 @@
-interface:
-  display_name: "GRVIS Reverse Engineering (Legacy)"
-  short_description: "Compatibility package for existing prompts"
-  default_prompt: "Use $grvis-reverse-engineering only when the user explicitly requests the legacy skill."
