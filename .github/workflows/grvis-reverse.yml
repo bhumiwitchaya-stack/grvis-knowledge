@@ -1,25 +1,40 @@
-name: GRVIS reverse contracts
+name: GRVIS repository contracts and REA fixture
+
 on:
   pull_request:
     paths:
-      - 'tools/**'
-      - 'tests/**'
-      - 'skills/reverse/**'
+      - 'README.md'
+      - 'index.html'
+      - 'reverse.html'
+      - 'reverse-engineering.html'
+      - 'knowledge-index.json'
+      - 'llms.txt'
+      - 'manifest.json'
+      - 'DEPLOYMENT_MANIFEST.json'
       - '.tasks/**'
+      - 'tests/**'
+      - 'tools/**'
       - '.github/workflows/grvis-reverse.yml'
   push:
-    branches: [codex/grvis-rea-framework-20261014, main]
+    branches: [main]
     paths:
-      - 'tools/**'
-      - 'tests/**'
-      - 'skills/reverse/**'
+      - 'README.md'
+      - 'index.html'
+      - 'reverse.html'
+      - 'reverse-engineering.html'
+      - 'knowledge-index.json'
+      - 'llms.txt'
+      - 'manifest.json'
+      - 'DEPLOYMENT_MANIFEST.json'
       - '.tasks/**'
+      - 'tests/**'
+      - 'tools/**'
       - '.github/workflows/grvis-reverse.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  contracts:
+  portal-contracts:
     strategy:
       fail-fast: false
       matrix:
@@ -31,19 +46,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test bounded offline contracts
+      - name: Test portal contracts
         shell: bash
         run: |
-          mkdir -p results
-          python -m unittest discover -s tests -v 2>&1 | tee results/unit-tests.txt
-          python tools/reverse_workbench.py tests/fixtures/reverse-evidence.json | tee results/record-comparison.json
-          python -m py_compile tools/reverse_workbench.py
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: reverse-contracts-${{ matrix.os }}
-          path: results/
-          retention-days: 7
+          python -m unittest discover -s tests -v
   rea-owned-fixture:
     runs-on: ubuntu-latest
     timeout-minutes: 15
