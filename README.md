@@ -1,3 +1,5 @@
+> **Retired development repository — 2026-10-21.** Continue all GRVIS/REA development at [bhumiwitchayasig-bit/grvis-research-workbench](https://github.com/bhumiwitchayasig-bit/grvis-research-workbench). Legacy open work is superseded by the merged consolidation change there. This repository retains historical source and evidence. External-review requests are cancelled by the owner.
+
 # GRVIS Ω∞ Public Knowledge Portal — v3.0-RC1
 
 Canonical architecture: `GRVIS_OMEGA_UNIFIED_AGI_v3.0_RC1.md` (kept in project knowledge; public pages are descriptive summaries).
